@@ -1,0 +1,33 @@
+PROG
+
+global float algo = 3.4;
+global char b = 's';
+global string cosa = "lol";
+
+int function FUNC (int a, float b) beginf {
+	print(algo);
+} endf
+
+begin {
+
+	int temp = 5 + 2;
+	int temp2 = 3;
+
+	if ((temp > temp2) && (id < id2)) {
+		print(temp);
+		print(temp);
+                if (temp) {
+			a = 5;
+		} else {
+			c = 2;
+		}
+	}
+
+	FUNC(temp,temp2);
+
+	repeat 8 {
+		read(temp2);	
+	}
+
+}
+end

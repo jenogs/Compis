@@ -1,0 +1,2 @@
+El de Otro_semantica es el que estoi modificando con todos los metodos i structuras de semantica..
+ aun no subo el archivo de nosotros pork no me quiere compilar.. pero de aqui me estoy basando.
