@@ -1,4 +1,4 @@
-// vars_memory: almacena el tipo de dato de la variable y su direccion virtual. 
+// vars_memory: almacena el tipo de dato de la variable y su direccion virtual...
 // Key de la hash table que apunta type_table
 typedef struct {
     char *type;
