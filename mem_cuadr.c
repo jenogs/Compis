@@ -7,50 +7,56 @@
 enum memoria{
      enteros_globales =   0,
      flotantes_globales = 1000,
-     char_globales =      2000,
+     chars_globales =     2000,
      strings_globales =   3000,
-     boolean_globales =   4000,
+     booleanos_globales = 4000,
+     
      enteros_locales =    5000,
      flotantes_locales =  6000,
-     char_locales =       7000,
+     chars_locales =      7000,
      strings_locales =    8000,
-     boolean_locales =    9000,
+     booleanos_locales =  9000,
      
      enteros_temporales =   10000,
      flotantes_temporales = 11000,
-     char_temporales =      12000,
+     chars_temporales =     12000,
      strings_temporales =   13000,
-     boolean_temporales =   14000,
+     booleanos_temporales = 14000,
+     
      enteros_const =        15000,
      flotantes_const =      16000,
-     char_const =           17000,
+     chars_const =          17000,
      strings_const =        18000,
-     boolean_const =        19000   
+     booleanos_const =      19000   
      };
 
+
+
 //aountadores de control de memoria
-int cuadruplos_cont = 0,
+int apunta_cuadruplos_cont = 0,
     apunta_enteros_globales = 0,
     apunta_flotantes_globales = 0,
-    apunta_char_globales = 0,
+    apunta_chars_globales = 0,
     apunta_strings_globales = 0,
-    apunta_boolean_globales = 0,
+    apunta_booleanos_globales = 0,
+    
     apunta_enteros_locales = 0,
     apunta_flotantes_locales = 0,
-    apunta_char_locales = 0,
+    apunta_chars_locales = 0,
     apunta_strings_locales = 0,
-    apunta_boolean_locales = 0,
+    apunta_booleanos_locales = 0,
     
-    apunta_enteros_temporales = 0,
-    apunta_flotantes_temporales = 0,
-    apunta_char_temporales = 0,
-    apunta_strings_temporales = 0,
-    apunta_boolean_temporales = 0,
-    apunta_enteros_const = 0,
-    apunta_flotantes_const = 0,
-    apunta_char_const = 0,
-    apunta_strings_const = 0,
-    apunta_boolean_const = 0;  
+    apunta_enteros_temporales = enteros_temporales,
+    apunta_flotantes_temporales = flotantes_temporales,
+    apunta_chars_temporales = chars_temporales,
+    apunta_strings_temporales = strings_temporales,
+    apunta_booleanos_temporales = booleanos_temporales,
+    
+    apunta_enteros_const = enteros_const,
+    apunta_flotantes_const = flotantes_const,
+    apunta_chars_const = chars_const,
+    apunta_strings_const = strings_const,
+    apunta_booleanos_const = booleanos_const;  
      
      int tabla_tipos(char *var1, char *var2){
     if(
@@ -78,9 +84,9 @@ int cuadruplos_cont = 0,
     )
       return 4; // string
     else if (
-      ((strcmp("boolean", var1)== 0) && (strcmp("boolean", var2) == 0)) 
+      ((strcmp("booleanos", var1)== 0) && (strcmp("booleanos", var2) == 0)) 
       )
-      return 5; // boolean
+      return 5; // booleanos
     else return 0; // invalida  
     }
      
@@ -90,5 +96,14 @@ void struct formato_cuadruplo{
      char* operando2;
      char* resultado;
      }
+
+void resetea_tabla_temporales(){
+    enteros_temporales = enteros_temporales,
+    flotantes_temporales = flotantes_temporales,
+    chars_temporales = chars_temporales,
+    strings_temporales = strings_temporales,
+    booleanosos_temporales = booleanosos_temporales,
+     }
+
 
      
