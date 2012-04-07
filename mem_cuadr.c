@@ -4,7 +4,7 @@
 #include <stdlib.h>
 
 //espacios en memoria
-enum memoria{
+enum memoria {
      enteros_globales =   0,
      flotantes_globales = 1000,
      chars_globales =     2000,
@@ -28,7 +28,7 @@ enum memoria{
      chars_const =          17000,
      strings_const =        18000,
      booleanos_const =      19000   
-     };
+};
 
 
 

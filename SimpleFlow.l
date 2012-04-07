@@ -38,6 +38,7 @@ using namespace std;
 "int"						{ return INT; }
 "float"						{ return FLOAT; }
 "string"					{ return STR; }
+"bool"						{ return BOOL; }
 "char"						{ return CHAR; }
 "begin"						{ return BEGINP; }
 "end"						{ return ENDP; }
@@ -46,6 +47,7 @@ using namespace std;
 "beginf"					{ return BEGINF; }
 "endf"						{ return ENDF; }
 "global"					{ return GLOBAL; }
+"true"|"false"					{ return BOOLEAN; }
 [A-Z0-9]+					{ return NOMBRE; }
 [a-zA-Z0-9]+					{ return ID; }
 \'[a-z|A-Z]\'					{ return CH; }
