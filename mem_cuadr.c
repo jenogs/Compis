@@ -105,5 +105,60 @@ void resetea_tabla_temporales(){
     booleanosos_temporales = booleanosos_temporales,
      }
 
+//GENERA CUADRUPLOS WORKING ON THIS!!.. :S
+void genera_cuadruplos(){
+    char *operando_uno, *operando_dos, *temporal;  // Top y Top-1 de la pila de tipos
+    int *temp_count;
+    int operator, first_oper, second_oper, valid_type;
+
+    operator = (int)g_queue_pop_tail(StackOper);    // Saca primer operador de la pila de operadores
+    first_oper = g_queue_pop_tail(StackO);          // Solo sacamos el primer_oper en caso de que sea math_function
+
+    if (operator == INDEX) {      // Si llega index de arreglos, mete para generar verificacion y meter desplazamiento
+        g_queue_push_tail(StackO, first_oper);  
+    } else if (operator == ABS || operator == COS || operator == SIN || // 'as' 'cs' 'sn'    // Generacion de Math_function
+        operator == LOG || operator == TAN || operator == SQRT) { // 'lg' 'tn' 'st'
+		insert_quadruple_to_array(operator, first_oper, 0, temp_decimals_count);
+        g_queue_push_tail(StackO, (gpointer)temp_decimals_count);   // Se da push al temp que guarda el valor de la fn
+        g_queue_push_tail(StackTypes, (gpointer)"decimal");         // Se da push al tipo decimal que sera igual para todos
+        temp_decimals_count = temp_decimals_count + 1;              // Se incrementa en uno el temp de decimales
+    } else if (operator == PRINT || operator == PRINTLINE || operator == READINT || operator == READLINE) {  
+        //default_functions     
+        insert_quadruple_to_array(operator, first_oper, 0, 0); // El pop es 0 cuando no es arr
+        g_queue_push_tail(StackOper, (gpointer)operator);
+    } else {    // Genera cuadruplos para asignacion o el resto de tipo de cuadruplos (que no son math_functions)
+        second_oper = g_queue_pop_tail(StackO);         // Saca el siguiente operando para hacer las operaciones
+        operando_uno = g_queue_pop_tail(StackTypes);      // Saca primer operando
+        operando_dos = g_queue_pop_tail(StackTypes);     // Saca siguiente operando
+        valid_type = valid_var_types(operando_uno, operando_dos); // Obtiene el tipo de valor al cual se casteara la operacion
+        if (valid_type != 0){ // Si es valido, se genera el cuadruplo
+            if (operator == EQUALS) {
+                if (array_in == 1) { second_oper = equals_id_address; array_in = 0; equals_id_address = 0; }
+                insert_quadruple_to_array(operator, second_oper, 0, first_oper);
+            } else {    // Asigna el tipo de dato a la variable que guardara el resultado de la operacion
+                    if (valid_type == 1) { temp_count = &temp_integers_count; temp_type = "integer"; }
+                    if (valid_type == 2) { temp_count = &temp_strings_count; temp_type = "string"; }
+                    if (valid_type == 3) { temp_count = &temp_booleans_count; temp_type = "boolean"; }
+                    if (valid_type == 4) { temp_count = &temp_decimals_count; temp_type = "decimal"; }
+				    insert_quadruple_to_array(operator, second_oper, first_oper, *temp_count);
+                    // Mete el temporal a la pila para incluirse en las operaciones
+                    g_queue_push_tail(StackO, (gpointer)*temp_count);  
+                    g_queue_push_tail(StackTypes, (gpointer)temp_type);
+				    //Si es un operador logico, mete un tipo booleano a la pila de tipos
+				    if(operator == LT || operator == GT || operator == G_EQUAL_T ||
+                       operator == L_EQUAL_T || operator == SAME || operator == DIFF ||
+                       operator == AND || operator == OR) {
+					    g_queue_push_tail(StackTypes, (gpointer)"boolean");
+                        g_queue_push_tail(StackTypes, (gpointer)"boolean");
+				    }
+                    *temp_count = *temp_count + 1;
+                //}
+            }   
+        } else { // Error semantico, tipos incompatibles (var_type == 0)
+            printf("Error al hacer la operacion entre los tipos de dato\n");
+            exit(0);
+        }
+    }
+}
 
      
