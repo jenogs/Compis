@@ -13,6 +13,10 @@ void yyerror(const char *s);
 char tipo;
 char tipocte;
 char *proc;
+<<<<<<< HEAD
+=======
+int cParam = 0;
+>>>>>>> 288bc3b6c5781ab8fcdce3757e6039361f0b0322
 
 
 %}
@@ -50,6 +54,26 @@ programa2: /* empty */
 
 asignaglobal: /* empty */
 	| GLOBAL asignaciong asignaglobal { printf("Asignacion global\n"); }
+<<<<<<< HEAD
+	;
+
+asignaciong: tipo ID EQ asigna2 PC { if(buscaVar($2)){
+					if(tipo == 'n') {
+						//asigna
+					} else {
+						printf("Error: Variable global existente: %s", $2);
+					}
+				    } else {
+					if(tipo == tipocte) {
+						insertaVar(tipo, $2, 'g');
+						printf("Asignacion Completa\n");
+					} else {
+						printf("Error: Tipos no compatibles");
+					}
+				   }
+				}
+=======
+>>>>>>> 288bc3b6c5781ab8fcdce3757e6039361f0b0322
 	;
 
 asignaciong: tipo ID EQ asigna2 PC { if(buscaVar($2)){
@@ -69,12 +93,16 @@ asignaciong: tipo ID EQ asigna2 PC { if(buscaVar($2)){
 				}
 	;
 
+/*****BLOQUES*****/
+
 bloque: LLA bloque2 LLC { printf("Bloque completo\n"); }
 	;
 
 bloque2: /* empty */
 	| estatuto bloque2 { printf("Bloque2 completo\n"); }
 	;
+
+/*****ESTATUTOS*****/
 
 estatuto: asignacion
 	| condicion
@@ -84,7 +112,11 @@ estatuto: asignacion
 	| funcion
 	;
 
+<<<<<<< HEAD
 /*****Función*****/
+=======
+/*****ESTATUTO-FUNCION*****/
+>>>>>>> 288bc3b6c5781ab8fcdce3757e6039361f0b0322
 
 funcion: NOMBRE PARA funcion2 PARC PC { printf("Funcion\n"); }
 	;
@@ -110,6 +142,7 @@ condicion3: /* empty */
 	;
 
 /*****ASIGNACION LOCAL*****/
+<<<<<<< HEAD
 
 asignacion: tipo ID EQ asigna2 PC { if(buscaVar($2)){
 					if(tipo == 'n') {
@@ -131,6 +164,31 @@ asignacion: tipo ID EQ asigna2 PC { if(buscaVar($2)){
 asigna2: exp
 	| funcion 
 	;
+=======
+
+asignacion: tipo ID EQ asigna2 PC { if(buscaVar($2)){
+					if(tipo == 'n') {
+						//asigna
+					} else {
+						printf("Error: Variable local existente: %s", $2);
+					}
+				    } else {
+					if(tipo == tipocte) {
+						insertaVar(tipo, $2, 'l');
+						printf("Asignacion Completa\n");
+					} else {
+						printf("Error: Tipos no compatibles");
+					}
+				     }
+				   }
+	;
+
+asigna2: exp
+	| funcion 
+	;
+
+/*****TIPO DE DATO*****/
+>>>>>>> 288bc3b6c5781ab8fcdce3757e6039361f0b0322
 
 tipo:	/* empty*/ { tipo = 'n'; }
 	| INT { tipo = 'i'; }
@@ -159,6 +217,8 @@ lectura: READ PARA ID PARC PC { printf("Lectura completa\n"); }
 ciclo: REPEAT varcte bloque { printf("Ciclo completo\n"); }
 	;
 
+/*****EXPRESION*****/
+
 expresion: expresion2 operadorl { printf("Termina expresion\n"); }
 	|  varcte { printf("Termina expresion booleana\n"); }
 	;
@@ -171,15 +231,18 @@ expresion2: exp MAY { /*meterPOper(); */} exp { printf("Mayor que\n"); }
 	;
 
 operadorl: /* empty */
-	| AND expresion { printf("And\n"); }
-	| OR expresion { printf("Or\n"); }
+	| AND expresion
+	| OR expresion
 	;
 
-exp: 	termino SUM exp { printf("Exp\n"); }
-	| termino RES exp
+/*****EXP*****/
+
+exp: 	termino SUM { /*meterPOper(); */} exp
+	| termino RES { /*meterPOper(); */} exp
 	| termino
 	;
 
+<<<<<<< HEAD
 termino: factor MULT { /*meterPOper(); */} termino 
 	| factor DIV { /*meterPOper(); */} termino 
 	| factor 
@@ -200,6 +263,34 @@ varcte: ID {}
 	;
 
 /****FUNCIÓN****/
+=======
+/*****MULTIPLICACION Y DIVISION*****/
+
+termino: factor MULT { /*meterPOper(); */} termino
+	| factor DIV { /*meterPOper(); */} termino
+	| factor
+	;
+
+/*****SUMA Y RESTA*****/
+
+factor: PARA exp PARC
+	| SUM { /*meterPOper(); */} varcte
+	| RES { /*meterPOper(); */} varcte
+	| varcte
+	;
+
+/*****VARIABLES CONSTANTES*****/
+
+varcte: ID {/*meterPilaO(); */}
+	| CTEE { tipocte = 'i'; /*meterPilaO(); */}
+	| CTEF { tipocte = 'f'; /*meterPilaO(); */} 
+	| STRING { tipocte = 's'; /*meterPilaO(); */}
+	| CH { tipocte = 'c';  /*meterPilaO(); */}
+	| BOOLEAN { tipocte = 'b'; /*meterPilaO(); */}
+	;
+
+/****FUNCIÃ“N****/
+>>>>>>> 288bc3b6c5781ab8fcdce3757e6039361f0b0322
 
 function: tipo FUNCTION NOMBRE { if(!buscaProc($3)) {
 					insertaProc(tipo, $3);
@@ -208,10 +299,17 @@ function: tipo FUNCTION NOMBRE { if(!buscaProc($3)) {
 					printf("Error: Procedimiento existente.");
 				 }
 				}
+<<<<<<< HEAD
 	PARA function2 PARC BEGINF bloque ENDF
 	;
 
 function2: tipo ID { insertaParam(tipo, $2, proc) } function3
+=======
+	PARA function2 PARC { cParam = 0; } BEGINF bloque ENDF
+	;
+
+function2: tipo ID { insertaParam(tipo, $2, cParam) } function3
+>>>>>>> 288bc3b6c5781ab8fcdce3757e6039361f0b0322
 	;
 
 function3: /* empty */
