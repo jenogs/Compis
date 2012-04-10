@@ -13,6 +13,7 @@ void yyerror(const char *s);
 char tipo;
 char tipocte;
 char *proc;
+int cParam = 0;
 
 
 %}
@@ -69,12 +70,16 @@ asignaciong: tipo ID EQ asigna2 PC { if(buscaVar($2)){
 				}
 	;
 
+/*****BLOQUES*****/
+
 bloque: LLA bloque2 LLC { printf("Bloque completo\n"); }
 	;
 
 bloque2: /* empty */
 	| estatuto bloque2 { printf("Bloque2 completo\n"); }
 	;
+
+/*****ESTATUTOS*****/
 
 estatuto: asignacion
 	| condicion
@@ -84,7 +89,7 @@ estatuto: asignacion
 	| funcion
 	;
 
-/*****Función*****/
+/*****ESTATUTO-FUNCION*****/
 
 funcion: NOMBRE PARA funcion2 PARC PC { printf("Funcion\n"); }
 	;
@@ -132,6 +137,8 @@ asigna2: exp
 	| funcion 
 	;
 
+/*****TIPO DE DATO*****/
+
 tipo:	/* empty*/ { tipo = 'n'; }
 	| INT { tipo = 'i'; }
 	| FLOAT { tipo = 'f'; }
@@ -159,6 +166,8 @@ lectura: READ PARA ID PARC PC { printf("Lectura completa\n"); }
 ciclo: REPEAT varcte bloque { printf("Ciclo completo\n"); }
 	;
 
+/*****EXPRESION*****/
+
 expresion: expresion2 operadorl { printf("Termina expresion\n"); }
 	|  varcte { printf("Termina expresion booleana\n"); }
 	;
@@ -171,32 +180,40 @@ expresion2: exp MAY exp { printf("Mayor que\n"); }
 	;
 
 operadorl: /* empty */
-	| AND expresion { printf("And\n"); }
-	| OR expresion { printf("Or\n"); }
+	| AND expresion
+	| OR expresion
 	;
 
-exp: 	termino SUM exp { printf("Exp\n"); }
-	| termino RES exp
+/*****EXP*****/
+
+exp: 	termino SUM { /*meterPOper(); */} exp
+	| termino RES { /*meterPOper(); */} exp
 	| termino
 	;
+
+/*****MULTIPLICACION Y DIVISION*****/
 
 termino: factor MULT { /*meterPOper(); */} termino
 	| factor DIV { /*meterPOper(); */} termino
 	| factor
 	;
 
-factor: PARA exp PARC { printf("Cierra parentesis\n"); }
+/*****SUMA Y RESTA*****/
+
+factor: PARA exp PARC
 	| SUM { /*meterPOper(); */} varcte
 	| RES { /*meterPOper(); */} varcte
 	| varcte
 	;
 
-varcte: ID {}
-	| CTEE { tipocte = 'i'; }
-	| CTEF { tipocte = 'f'; } 
-	| STRING { tipocte = 's'; }
-	| CH { tipocte = 'c';  }
-	| BOOLEAN { tipocte = 'b'; }
+/*****VARIABLES CONSTANTES*****/
+
+varcte: ID {/*meterPilaO(); */}
+	| CTEE { tipocte = 'i'; /*meterPilaO(); */}
+	| CTEF { tipocte = 'f'; /*meterPilaO(); */} 
+	| STRING { tipocte = 's'; /*meterPilaO(); */}
+	| CH { tipocte = 'c';  /*meterPilaO(); */}
+	| BOOLEAN { tipocte = 'b'; /*meterPilaO(); */}
 	;
 
 /****FUNCIÓN****/
@@ -208,10 +225,10 @@ function: tipo FUNCTION NOMBRE { if(!buscaProc($3)) {
 					printf("Error: Procedimiento existente.");
 				 }
 				}
-	PARA function2 PARC BEGINF bloque ENDF
+	PARA function2 PARC { cParam = 0; } BEGINF bloque ENDF
 	;
 
-function2: tipo ID { insertaParam(tipo, $2, proc) } function3
+function2: tipo ID { insertaParam(tipo, $2, cParam) } function3
 	;
 
 function3: /* empty */

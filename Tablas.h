@@ -26,4 +26,4 @@ int buscaProc(char *id);
 void imprimeProc(FILE * listing);
 
 /* Insertar Parámetros al procedimiento */
-void insertaParam(char tipo, char *id, char *proc);
+void insertaParam(char tipo, char *id, int cParam);

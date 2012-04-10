@@ -41,27 +41,33 @@ enum memoria {
 
 /* Apuntadores de las direcciones virtuales de las variables */
 
-/* Enteros Globales */
+//Enteros Globales
 int apunta_enteros_globales = 0, apunta_flotantes_globales = 0, apunta_chars_globales = 0, apunta_strings_globales = 0, apunta_booleanos_globales = 0;
 
-/* Enteros Locales */    
+// Enteros Locales    
 int apunta_enteros_locales = 0, apunta_flotantes_locales = 0, apunta_chars_locales = 0, apunta_strings_locales = 0, apunta_booleanos_locales = 0;
 
-/* Enteros Temporales */    
+// Enteros Temporales    
 int apunta_enteros_temporales = enteros_temporales,
     apunta_flotantes_temporales = flotantes_temporales,
     apunta_chars_temporales = chars_temporales,
     apunta_strings_temporales = strings_temporales,
     apunta_booleanos_temporales = booleanos_temporales;
 
-/* Enteros Constantes */
+// Enteros Constantes
 int apunta_enteros_const = enteros_const,
     apunta_flotantes_const = flotantes_const,
     apunta_chars_const = chars_const,
     apunta_strings_const = strings_const,
-    apunta_booleanos_const = booleanos_const; 
+    apunta_booleanos_const = booleanos_const;
 
-/* Estructura de tabla de variables */
+/* Apuntadores de las tablas de hash */
+int hv; // Apuntador de variables
+int hp; // Apuntador de procedimientos
+
+/* Estructuras de Tablas y Directorios */
+
+// Estructura de tabla de variables
 typedef struct tabVars{
 	struct tabVars *sig;
 	char tipo;
@@ -70,18 +76,19 @@ typedef struct tabVars{
 	int dirvar;
 } *vars;
 
-/* Estructura de Directorio de Procedimientos */
-typedef struct tabProcs{
-	struct tabProcs *sig;
-	struct tabVars stv[50];
+// Estructura de parámetros para los procedimientos
+struct params{
 	char tipo;
 	char *id;
-	int apuntador;
-	int idxchar;
-	int idxint;
-	int idxflt;
-	int idxbool;
-	int idxstr;
+};
+
+// Estructura de Directorio de Procedimientos
+typedef struct tabProcs{
+	struct tabProcs *sig;
+	char tipo;
+	char *id;
+	struct params parametro[50];
+	vars stv[50];
 } *procs;
 
 
@@ -104,8 +111,8 @@ static procs hashProcs[TAMANO_HASH];
 
 /* Insertar variable */
 void insertaVar(char tipo, char *id, char scope) {
-	int h = hash(id);
-	vars v =  hashVars[h];
+	hv = hash(id);
+	vars v =  hashVars[hv];
 
 	v = (vars)malloc(sizeof(struct tablaVars));
 	v->tipo = tipo;
@@ -158,14 +165,14 @@ void insertaVar(char tipo, char *id, char scope) {
 				break;
 		}	
 	}
-	v->sig = hashVars[h];
-	hashVars[h] = v;
+	v->sig = hashVars[hv];
+	hashVars[hv] = v;
 }
 
 /* Buscar Variables en tabla */
 int buscaVar(char *id) {
-	int h = hash(name);
-	vars v =  hashVars[h];
+	hv = hash(id);
+	vars v =  hashVars[hv];
 	while ((v != NULL) && ((strcmp(id,v->id) != 0) || (v->scope != scope)))
 		v = v->sig;
 	if (v == NULL)
@@ -194,8 +201,8 @@ void imprimeVar(FILE * listing) {
 
 /* Insertar Procedimiento */
 void insertaProc(char tipo, char *id){
-	int h = hash(id);
-	procs p =  hashProcs[h];
+	hp = hash(id);
+	procs p =  hashProcs[hp];
 	vars v =  hashVars[h];
 
 	p = (procs)malloc(sizeof(struct tablaProcs));
@@ -203,6 +210,9 @@ void insertaProc(char tipo, char *id){
 	p->tipo = tipo;
 	p->id = id;
 	p->tabVars = v;
+
+	p->sig = hashProcs[hp];
+	hashProcs[hp] = p;
 
 	apunta_enteros_locales = 0;
 	apunta_flotantes_locales = 0;
@@ -213,23 +223,14 @@ void insertaProc(char tipo, char *id){
 
 /* Buscar Procedimiento en directorio */
 int buscaProc(char *id) {
-	int h = hash(id);
-	procs p =  hashProcs[h];
+	hp = hash(id);
+	procs p =  hashProcs[hp];
 	while ((p != NULL) && (strcmp(id,p->id) != 0))
 		p = p->sig;
 	if (p == NULL)
 		return -1;
 	else
 		return p->apuntador;
-}
-
-void insertaParam(char tipo, char *id, char *proc) {
-	if(buscaProc(proc)) {
-		
-	} else {
-		printf("Error: El metodo no existe\n");
-		exit(0);
-	}
 }
 
 /* Imprime directorio de procedimientos */
@@ -247,5 +248,17 @@ void imprimeProc(FILE * listing){
 				p = p->sig;
 			}
 		}
+	}
+}
+
+/* Insertar parámetros a los procedimientos */
+void insertaParam(char tipo, char *id, int cParam) {
+	procs p = hashProcs[hp];
+	if(buscaProc(p)) {
+		p->parametro[cParam]->tipo = tipo;
+		p->parametro[cParam]->id = id;
+	} else {
+		printf("Error: El metodo no existe\n");
+		exit(0);
 	}
 }
