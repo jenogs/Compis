@@ -21,19 +21,13 @@ int cParam = 0;
 
 %union {
 	char *palabra;
-	char caracter;
-	int entero;
-	float flotante;
 };
 
 %token NOMBRE BEGINP ENDP FUNCTION BEGINF ENDF CTEE CTEF IGU GLOBAL BOOLEAN ID
 %token MAY MEN DIF IF ELSE PRINT SUM RES MULT DIV STR INT FLOAT PROG VAR EQ BOOL AND OR STRING ELSEIF REPEAT READ CHAR CH
 %token DP PC COMA LLA LLC PARA PARC
 
-%type <entero> CTEE
-%type <flotante> CTEF
-%type <palabra> ID NOMBRE STRING
-%type <caracter> CH
+%type <palabra> ID NOMBRE STRING CTEE CTEF BOOLEAN CH
 
 %left SUM RES MULT DIV
 %left MAY MEN DIF AND OR IGU
@@ -41,7 +35,7 @@ int cParam = 0;
 
 %%
 
-programa: NOMBRE asignaglobal programa2 BEGINP bloque ENDP { printf("Programa completo\n"); }
+programa: NOMBRE { insertaProc('n', $1);} asignaglobal programa2 BEGINP bloque ENDP { printf("Programa completo\n"); }
 	;
 
 programa2: /* empty */
@@ -210,11 +204,11 @@ factor: PARA exp PARC
 /*****VARIABLES CONSTANTES*****/
 
 varcte: ID {/*meterPilaO(); */}
-	| CTEE { tipocte = 'i'; /*meterPilaO(); */}
-	| CTEF { tipocte = 'f'; /*meterPilaO(); */} 
-	| STRING { tipocte = 's'; /*meterPilaO(); */}
-	| CH { tipocte = 'c';  /*meterPilaO(); */}
-	| BOOLEAN { tipocte = 'b'; /*meterPilaO(); */}
+	| CTEE { agragaCte('i', $1); tipocte = 'i'; /*meterPilaO(); */}
+	| CTEF { agragaCte('f', $1); tipocte = 'f'; /*meterPilaO(); */} 
+	| STRING { agragaCte('s', $1); tipocte = 's'; /*meterPilaO(); */}
+	| CH { agragaCte('c', $1); tipocte = 'c';  /*meterPilaO(); */}
+	| BOOLEAN { agragaCte('b', $1); tipocte = 'b'; /*meterPilaO(); */}
 	;
 
 /****FUNCIÓN****/
@@ -250,6 +244,9 @@ main() {
 	do {
 		yyparse();
 	} while (!feof(yyin));
+
+	//imprimeVar(myfile);
+	//imprimeProc(myfile);
 }
 
 void yyerror(const char *s) {

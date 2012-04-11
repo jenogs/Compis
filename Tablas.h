@@ -41,11 +41,19 @@ enum memoria {
 
 /* Apuntadores de las direcciones virtuales de las variables */
 
-//Enteros Globales
-int apunta_enteros_globales = 0, apunta_flotantes_globales = 0, apunta_chars_globales = 0, apunta_strings_globales = 0, apunta_booleanos_globales = 0;
+// Enteros Globales
+int apunta_enteros_globales = 0,
+    apunta_flotantes_globales = 0,
+    apunta_chars_globales = 0,
+    apunta_strings_globales = 0,
+    apunta_booleanos_globales = 0;
 
 // Enteros Locales    
-int apunta_enteros_locales = 0, apunta_flotantes_locales = 0, apunta_chars_locales = 0, apunta_strings_locales = 0, apunta_booleanos_locales = 0;
+int apunta_enteros_locales = 0,
+    apunta_flotantes_locales = 0,
+    apunta_chars_locales = 0,
+    apunta_strings_locales = 0,
+    apunta_booleanos_locales = 0;
 
 // Enteros Temporales    
 int apunta_enteros_temporales = enteros_temporales,
@@ -55,15 +63,16 @@ int apunta_enteros_temporales = enteros_temporales,
     apunta_booleanos_temporales = booleanos_temporales;
 
 // Enteros Constantes
-int apunta_enteros_const = enteros_const,
-    apunta_flotantes_const = flotantes_const,
-    apunta_chars_const = chars_const,
-    apunta_strings_const = strings_const,
-    apunta_booleanos_const = booleanos_const;
+int apunta_enteros_const = 0,
+    apunta_flotantes_const = 0,
+    apunta_chars_const = 0,
+    apunta_strings_const = 0,
+    apunta_booleanos_const = 0;
 
 /* Apuntadores de las tablas de hash */
 int hv; // Apuntador de variables
 int hp; // Apuntador de procedimientos
+int hc; // Apuntador de constantes
 
 /* Estructuras de Tablas y Directorios */
 
@@ -81,7 +90,7 @@ struct params{
 	char *id;
 };
  
-/* Estructura de Directorio de Procedimientos */
+// Estructura de Directorio de Procedimientos
 typedef struct tabProcs{
 	struct tabProcs *sig;
 	char tipo;
@@ -89,16 +98,52 @@ typedef struct tabProcs{
 	struct params parametro[50];
 	vars stv[TAMANO_HASH];
 } *procs;
-/*
-typedef vars *ptrNodoVars;
-typedef vars *ptrPilaVars;
 
-typedef vars *ptrNodoProcs;
-typedef vars *ptrPilaProcs;
-*/
+// Estructuras de Constantes
+typedef struct constante_int{
+	struct constante_int *sig;
+	int val;
+	int dirvar;
+} *cteInt;
+
+typedef struct constante_float{
+	struct constante_float *sig;
+	float val;
+	int dirvar;
+} *cteFloat;
+
+typedef struct constante_char{
+	struct constante_char *sig;
+	char *val;
+	int dirvar;
+} *cteChar;
+
+typedef struct constante_str{
+	struct constante_str *sig;
+	char *val;
+	int dirvar;
+} *cteStr;
+
+typedef struct constante_bool{
+	struct constante_bool *sig;
+	char *val;
+	int dirvar;
+} *cteBool;
+
 /* Creación de las tablas */
+
+// Tabla de variables global
 static vars hashVars[TAMANO_HASH];
+
+// Directorio de Procedimientos
 static procs hashProcs[TAMANO_HASH];
+
+// Tablas de constantes
+static cteInt hashInt[TAMANO_HASH];
+static cteFloat hashFloat[TAMANO_HASH];
+static cteChar hashChar[TAMANO_HASH];
+static cteStr hashStr[TAMANO_HASH];
+static cteBool hashBool[TAMANO_HASH];
 
 /* Función de hash */
 unsigned int hash(char *key) {
@@ -113,7 +158,9 @@ unsigned int hash(char *key) {
     return h;
 }
 
-/* Insertar variable global */
+/* Funciones de Tablas de Variables */
+
+// Insertar variable global
 void insertaVarGlobal(char tipo, char *id) {
 	hv = hash(id);
 	vars v =  hashVars[hv];
@@ -149,7 +196,7 @@ void insertaVarGlobal(char tipo, char *id) {
 	hashVars[hv] = v;
 }
 
-/* Insertar variable Local */
+// Insertar variable Local
 void insertaVar(char tipo, char *id, char *idProc) {
 	hp = hash(idProc);	
 	hv = hash(id);
@@ -185,7 +232,7 @@ void insertaVar(char tipo, char *id, char *idProc) {
 	hashProcs[hp] = p;
 }
 
-/* Buscar Variables en tabla */
+// Buscar Variables en tabla
 int buscaVar(char *id) {
 	hv = hash(id);
 	vars v =  hashVars[hv];
@@ -197,7 +244,7 @@ int buscaVar(char *id) {
 		return v->dirvar;
 }
 
-/* Imprime tabla de variables 
+// Imprime tabla de variables 
 void imprimeVar(FILE *listing) {
 	int i;
 	fprintf(listing,"Nombre de Variable  Direccion\n");
@@ -213,9 +260,11 @@ void imprimeVar(FILE *listing) {
 			}
 		}
 	}
-}*/
+}
 
-/* Insertar Procedimiento */
+/* Funciones de Directorio de Procedimientos */
+
+// Insertar Procedimiento
 void insertaProc(char tipo, char *id){
 	hp = hash(id);
 	procs p =  hashProcs[hp];
@@ -234,7 +283,7 @@ void insertaProc(char tipo, char *id){
 	apunta_booleanos_locales = 0;
 }
 
-/* Buscar Procedimiento en directorio */
+// Buscar Procedimiento en directorio
 int buscaProc(char *id) {
 	hp = hash(id);
 	procs p =  hashProcs[hp];
@@ -246,7 +295,7 @@ int buscaProc(char *id) {
 		return hp;
 }
 
-/* Imprime directorio de procedimientos 
+// Imprime directorio de procedimientos 
 void imprimeProc(FILE *listing){
 	int i;
 	fprintf(listing,"Nombre del Procedimiento  Direccion\n");
@@ -262,9 +311,9 @@ void imprimeProc(FILE *listing){
 			}
 		}
 	}
-}*/
+}
 
-/* Insertar parámetros a los procedimientos */
+// Insertar parámetros a los procedimientos
 void insertaParam(char tipo, char *id, int cParam) {
 	procs p = hashProcs[hp];
 	if(buscaProc(p->id)) {
@@ -276,52 +325,131 @@ void insertaParam(char tipo, char *id, int cParam) {
 	}
 	hashProcs[hp] = p;
 }
-/*
-void pushVars(ptrPilaVars *pilavar, char id_v, struct siguiente_v, char tipo_v, char scope_v, int dirvar_v) {
-	ptrNodoVars nodo;
-	nodo = (ptrNodoVars)malloc(sizeof(vars));
-	if (nodo != NULL) {
-		nodo->*id = id;
-		nodo->tipo = tipo_v;
-		nodo->scope = scope_v;
-		nodo->dirvar = dirvar_v;
-		nodo->*sig = *pilavar;
-	// pila va a apuntar al nuevo nodo, con esto hacemos que el nuevo nodo sea ahora el primer nodo de la lista ligada
-		*pilavar = nodo;
-	}
+
+/* Funciones de Tablas de Constantes */
+
+// Busca constante entera
+int buscaCteInt(char *val){
+	hc = hash(val);
+	cteInt c =  hashInt[hc];
+	while ((c != NULL) && (atoi(val) != c->val))
+		c = c->sig;
+	if (c == NULL)
+		return -1;
+	else
+		return hc;
 }
 
-char popVarss(ptrPilaVars *pila) {
-	ptrNodoVars nodo;
-	//struct x;
-	//nodo = *pila;
-	//x = (*pila)->dato;
-	*pila = (*pila)->sig;
-	free(nodo);
-	return x;
-}
-    
-void pushProcs(ptrPilaProcs *pilaproc, char tipo_p, char *id_p, struct parametro_p, vars stv_p) {
-	ptrNodoProcs nodo;
-	nodo = (ptrNodoProcs)malloc(sizeof(procs));
-	if (nodo != NULL) {
-		nodo->*id = id_p;
-		nodo->tipo = tipo_p;
-		nodo->parametro = *parametro_p;
-		nodo->stv_p = *stv_p;
-		nodo->*sig = *pilaproc;
-	// pila va a apuntar al nuevo nodo, con esto hacemos que el nuevo nodo sea ahora el primer nodo de la lista ligada
-		*pilaproc = nodo;
-	}
+// Busca constante flotante
+int buscaCteFloat(char *val){
+	hc = hash(val);
+	cteFloat c =  hashFloat[hc];
+	while ((c != NULL) && (atof(val) != c->val))
+		c = c->sig;
+	if (c == NULL)
+		return -1;
+	else
+		return hc;
 }
 
-char popProcs(ptrPilaProcs *pila) {
-	ptrNodoProcs nodo;
-	//struct x;
-	//nodo = *pila;
-	//x = (*pila)->dato;
-	*pila = (*pila)->sig;
-	free(nodo);
-	return x;
+// Busca constante char
+int buscaCteChar(char *val){
+	hc = hash(val);
+	cteChar c =  hashChar[hc];
+	while ((c != NULL) && (strcmp(val,c->val) != 0))
+		c = c->sig;
+	if (c == NULL)
+		return -1;
+	else
+		return hc;
 }
-*/
+
+// Busca constante string
+int buscaCteStr(char *val){
+	hc = hash(val);
+	cteStr c =  hashStr[hc];
+	while ((c != NULL) && (strcmp(val,c->val) != 0))
+		c = c->sig;
+	if (c == NULL)
+		return -1;
+	else
+		return hc;
+}
+
+// Busca constante booleana
+int buscaCteBool(char *val){
+	hc = hash(val);
+	cteBool c =  hashBool[hc];
+	while ((c != NULL) && (strcmp(val,c->val) != 0))
+		c = c->sig;
+	if (c == NULL)
+		return -1;
+	else
+		return hc;
+}
+
+// Agrega constante
+void agragaCte(char tipo, char *val){
+	switch(tipo) {
+		case 'i':
+			if(buscaCteInt(val) == -1) {
+				hc = hash(val);
+				cteInt c =  hashInt[hc];
+				c = (cteInt)malloc(sizeof(struct constante_int));
+				c->val = atoi(val);
+				c->dirvar = enteros_const + apunta_enteros_const;
+				apunta_enteros_const++;
+				c->sig = hashInt[hc];
+				hashInt[hc] = c;
+			}
+			break;
+		case 'f':
+			if(buscaCteFloat(val) == -1) {
+				hc = hash(val);
+				cteFloat c =  hashFloat[hc];
+				c = (cteFloat)malloc(sizeof(struct constante_float));
+				c->val = atof(val);
+				c->dirvar = flotantes_const + apunta_flotantes_const;
+				apunta_flotantes_const++;
+				c->sig = hashFloat[hc];
+				hashFloat[hc] = c;
+			}
+			break;
+		case 'c':
+			if(buscaCteChar(val) == -1) {
+				hc = hash(val);
+				cteChar c =  hashChar[hc];
+				c = (cteChar)malloc(sizeof(struct constante_char));
+				c->val = val;
+				c->dirvar = chars_const + apunta_chars_const;
+				apunta_chars_const++;
+				c->sig = hashChar[hc];
+				hashChar[hc] = c;
+			}
+			break;
+		case 's':
+			if(buscaCteStr(val) == -1) {
+				hc = hash(val);
+				cteStr c =  hashStr[hc];
+				c = (cteStr)malloc(sizeof(struct constante_str));
+				c->val = val;
+				c->dirvar = strings_const + apunta_strings_const;
+				apunta_strings_const++;
+				c->sig = hashStr[hc];
+				hashStr[hc] = c;
+			}
+			break;
+		case 'b':
+			if(buscaCteBool(val) == -1) {
+				hc = hash(val);
+				cteBool c =  hashBool[hc];
+				c = (cteBool)malloc(sizeof(struct constante_bool));
+				c->val = val;
+				c->dirvar = booleanos_const + apunta_booleanos_const;
+				apunta_booleanos_const++;
+				c->sig = hashBool[hc];
+				hashBool[hc] = c;
+			}
+			break;
+	}
+}

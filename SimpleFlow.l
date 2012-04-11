@@ -9,10 +9,8 @@ using namespace std;
 
 %%
 
-[0-9]+						{ yylval.entero = atoi(yytext);
-						  return CTEE; }
-[0-9]+"."[0-9]+					{ yylval.flotante = atof(yytext);
-						  return CTEF; }
+[0-9]+						{ return CTEE; }
+[0-9]+"."[0-9]+					{ return CTEF; }
 ":"						{ return DP; }
 ";"						{ return PC; }
 ","						{ return COMA; }

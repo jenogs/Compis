@@ -828,222 +828,220 @@ do_action:	/* This label is used only to access EOF actions. */
 case 1:
 YY_RULE_SETUP
 #line 12 "SimpleFlow.l"
-{ yylval.entero = atoi(yytext);
-						  return CTEE; }
+{ return CTEE; }
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 14 "SimpleFlow.l"
-{ yylval.flotante = atof(yytext);
-						  return CTEF; }
+#line 13 "SimpleFlow.l"
+{ return CTEF; }
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 16 "SimpleFlow.l"
+#line 14 "SimpleFlow.l"
 { return DP; }
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 17 "SimpleFlow.l"
+#line 15 "SimpleFlow.l"
 { return PC; }
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 18 "SimpleFlow.l"
+#line 16 "SimpleFlow.l"
 { return COMA; }
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 19 "SimpleFlow.l"
+#line 17 "SimpleFlow.l"
 { return LLA; }
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 20 "SimpleFlow.l"
+#line 18 "SimpleFlow.l"
 { return LLC; }
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 21 "SimpleFlow.l"
+#line 19 "SimpleFlow.l"
 { return EQ; }
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 22 "SimpleFlow.l"
+#line 20 "SimpleFlow.l"
 { return PARA; }
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 23 "SimpleFlow.l"
+#line 21 "SimpleFlow.l"
 { return PARC; }
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 24 "SimpleFlow.l"
+#line 22 "SimpleFlow.l"
 { return MAY; }
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 25 "SimpleFlow.l"
+#line 23 "SimpleFlow.l"
 { return MEN; }
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 26 "SimpleFlow.l"
+#line 24 "SimpleFlow.l"
 { return DIF; }
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 27 "SimpleFlow.l"
+#line 25 "SimpleFlow.l"
 { return SUM; }
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 28 "SimpleFlow.l"
+#line 26 "SimpleFlow.l"
 { return RES; }
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
-#line 29 "SimpleFlow.l"
+#line 27 "SimpleFlow.l"
 { return MULT; }
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
-#line 30 "SimpleFlow.l"
+#line 28 "SimpleFlow.l"
 { return DIV; }
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
-#line 31 "SimpleFlow.l"
+#line 29 "SimpleFlow.l"
 { return AND; }
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
-#line 32 "SimpleFlow.l"
+#line 30 "SimpleFlow.l"
 { return OR; }
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
-#line 33 "SimpleFlow.l"
+#line 31 "SimpleFlow.l"
 { return IGU; }
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
-#line 34 "SimpleFlow.l"
+#line 32 "SimpleFlow.l"
 { return IF; }
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
-#line 35 "SimpleFlow.l"
+#line 33 "SimpleFlow.l"
 { return ELSE; }
 	YY_BREAK
 case 23:
 YY_RULE_SETUP
-#line 36 "SimpleFlow.l"
+#line 34 "SimpleFlow.l"
 { return PRINT; }
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
-#line 37 "SimpleFlow.l"
+#line 35 "SimpleFlow.l"
 { return READ; }
 	YY_BREAK
 case 25:
 YY_RULE_SETUP
-#line 38 "SimpleFlow.l"
+#line 36 "SimpleFlow.l"
 { return INT; }
 	YY_BREAK
 case 26:
 YY_RULE_SETUP
-#line 39 "SimpleFlow.l"
+#line 37 "SimpleFlow.l"
 { return FLOAT; }
 	YY_BREAK
 case 27:
 YY_RULE_SETUP
-#line 40 "SimpleFlow.l"
+#line 38 "SimpleFlow.l"
 { return STR; }
 	YY_BREAK
 case 28:
 YY_RULE_SETUP
-#line 41 "SimpleFlow.l"
+#line 39 "SimpleFlow.l"
 { return BOOL; }
 	YY_BREAK
 case 29:
 YY_RULE_SETUP
-#line 42 "SimpleFlow.l"
+#line 40 "SimpleFlow.l"
 { return CHAR; }
 	YY_BREAK
 case 30:
 YY_RULE_SETUP
-#line 43 "SimpleFlow.l"
+#line 41 "SimpleFlow.l"
 { return BEGINP; }
 	YY_BREAK
 case 31:
 YY_RULE_SETUP
-#line 44 "SimpleFlow.l"
+#line 42 "SimpleFlow.l"
 { return ENDP; }
 	YY_BREAK
 case 32:
 YY_RULE_SETUP
-#line 45 "SimpleFlow.l"
+#line 43 "SimpleFlow.l"
 { return REPEAT; }
 	YY_BREAK
 case 33:
 YY_RULE_SETUP
-#line 46 "SimpleFlow.l"
+#line 44 "SimpleFlow.l"
 { return FUNCTION; }
 	YY_BREAK
 case 34:
 YY_RULE_SETUP
-#line 47 "SimpleFlow.l"
+#line 45 "SimpleFlow.l"
 { return BEGINF; }
 	YY_BREAK
 case 35:
 YY_RULE_SETUP
-#line 48 "SimpleFlow.l"
+#line 46 "SimpleFlow.l"
 { return ENDF; }
 	YY_BREAK
 case 36:
 YY_RULE_SETUP
-#line 49 "SimpleFlow.l"
+#line 47 "SimpleFlow.l"
 { return GLOBAL; }
 	YY_BREAK
 case 37:
 YY_RULE_SETUP
-#line 50 "SimpleFlow.l"
+#line 48 "SimpleFlow.l"
 { return BOOLEAN; }
 	YY_BREAK
 case 38:
 YY_RULE_SETUP
-#line 51 "SimpleFlow.l"
+#line 49 "SimpleFlow.l"
 { return NOMBRE; }
 	YY_BREAK
 case 39:
 YY_RULE_SETUP
-#line 52 "SimpleFlow.l"
+#line 50 "SimpleFlow.l"
 { return ID; }
 	YY_BREAK
 case 40:
 YY_RULE_SETUP
-#line 53 "SimpleFlow.l"
+#line 51 "SimpleFlow.l"
 { return CH; }
 	YY_BREAK
 case 41:
 YY_RULE_SETUP
-#line 54 "SimpleFlow.l"
+#line 52 "SimpleFlow.l"
 { return STRING; }
 	YY_BREAK
 case 42:
 /* rule 42 can match eol */
 YY_RULE_SETUP
-#line 55 "SimpleFlow.l"
+#line 53 "SimpleFlow.l"
 {}
 	YY_BREAK
 case 43:
 YY_RULE_SETUP
-#line 57 "SimpleFlow.l"
+#line 55 "SimpleFlow.l"
 ECHO;
 	YY_BREAK
-#line 1047 "lex.yy.c"
+#line 1045 "lex.yy.c"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -2041,7 +2039,7 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 57 "SimpleFlow.l"
+#line 55 "SimpleFlow.l"
 
 
 

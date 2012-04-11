@@ -96,14 +96,11 @@ typedef union YYSTYPE
 #line 22 "SimpleFlow.y"
 
 	char *palabra;
-	char caracter;
-	int entero;
-	float flotante;
 
 
 
 /* Line 1676 of yacc.c  */
-#line 107 "SimpleFlow.tab.h"
+#line 104 "SimpleFlow.tab.h"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
