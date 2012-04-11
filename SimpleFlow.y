@@ -2,6 +2,7 @@
 #include <cstdio>
 #include <iostream>
 #include "Tablas.h"
+
 using namespace std;
 
 extern "C" int yylex();
@@ -13,10 +14,7 @@ void yyerror(const char *s);
 char tipo;
 char tipocte;
 char *proc;
-<<<<<<< HEAD
-=======
 int cParam = 0;
->>>>>>> 288bc3b6c5781ab8fcdce3757e6039361f0b0322
 
 
 %}
@@ -54,7 +52,6 @@ programa2: /* empty */
 
 asignaglobal: /* empty */
 	| GLOBAL asignaciong asignaglobal { printf("Asignacion global\n"); }
-<<<<<<< HEAD
 	;
 
 asignaciong: tipo ID EQ asigna2 PC { if(buscaVar($2)){
@@ -65,27 +62,8 @@ asignaciong: tipo ID EQ asigna2 PC { if(buscaVar($2)){
 					}
 				    } else {
 					if(tipo == tipocte) {
-						insertaVar(tipo, $2, 'g');
-						printf("Asignacion Completa\n");
-					} else {
-						printf("Error: Tipos no compatibles");
-					}
-				   }
-				}
-=======
->>>>>>> 288bc3b6c5781ab8fcdce3757e6039361f0b0322
-	;
-
-asignaciong: tipo ID EQ asigna2 PC { if(buscaVar($2)){
-					if(tipo == 'n') {
-						//asigna
-					} else {
-						printf("Error: Variable global existente: %s", $2);
-					}
-				    } else {
-					if(tipo == tipocte) {
-						insertaVar(tipo, $2, 'g');
-						printf("Asignacion Completa\n");
+						insertaVarGlobal(tipo, $2);
+						printf("Asignacion Completa en tabla de Variables Globales\n");
 					} else {
 						printf("Error: Tipos no compatibles");
 					}
@@ -112,11 +90,7 @@ estatuto: asignacion
 	| funcion
 	;
 
-<<<<<<< HEAD
-/*****Función*****/
-=======
 /*****ESTATUTO-FUNCION*****/
->>>>>>> 288bc3b6c5781ab8fcdce3757e6039361f0b0322
 
 funcion: NOMBRE PARA funcion2 PARC PC { printf("Funcion\n"); }
 	;
@@ -142,7 +116,6 @@ condicion3: /* empty */
 	;
 
 /*****ASIGNACION LOCAL*****/
-<<<<<<< HEAD
 
 asignacion: tipo ID EQ asigna2 PC { if(buscaVar($2)){
 					if(tipo == 'n') {
@@ -152,29 +125,7 @@ asignacion: tipo ID EQ asigna2 PC { if(buscaVar($2)){
 					}
 				    } else {
 					if(tipo == tipocte) {
-						insertaVar(tipo, $2, 'l');
-						printf("Asignacion Completa\n");
-					} else {
-						printf("Error: Tipos no compatibles");
-					}
-				     }
-				   }
-	;
-
-asigna2: exp
-	| funcion 
-	;
-=======
-
-asignacion: tipo ID EQ asigna2 PC { if(buscaVar($2)){
-					if(tipo == 'n') {
-						//asigna
-					} else {
-						printf("Error: Variable local existente: %s", $2);
-					}
-				    } else {
-					if(tipo == tipocte) {
-						insertaVar(tipo, $2, 'l');
+						insertaVar(tipo, $2, proc);
 						printf("Asignacion Completa\n");
 					} else {
 						printf("Error: Tipos no compatibles");
@@ -188,7 +139,6 @@ asigna2: exp
 	;
 
 /*****TIPO DE DATO*****/
->>>>>>> 288bc3b6c5781ab8fcdce3757e6039361f0b0322
 
 tipo:	/* empty*/ { tipo = 'n'; }
 	| INT { tipo = 'i'; }
@@ -223,10 +173,10 @@ expresion: expresion2 operadorl { printf("Termina expresion\n"); }
 	|  varcte { printf("Termina expresion booleana\n"); }
 	;
 
-expresion2: exp MAY { /*meterPOper(); */} exp { printf("Mayor que\n"); }
-	| exp MEN { /*meterPOper(); */} exp { printf("Menor que\n"); }
-	| exp DIF { /*meterPOper(); */} exp
-	| exp IGU { /*meterPOper(); */} exp
+expresion2: exp MAY exp { printf("Mayor que\n"); }
+	| exp MEN exp { printf("Menor que\n"); }
+	| exp DIF exp
+	| exp IGU exp
 	| PARA expresion2 PARC { printf("Termina expresion2\n"); }
 	;
 
@@ -242,28 +192,6 @@ exp: 	termino SUM { /*meterPOper(); */} exp
 	| termino
 	;
 
-<<<<<<< HEAD
-termino: factor MULT { /*meterPOper(); */} termino 
-	| factor DIV { /*meterPOper(); */} termino 
-	| factor 
-	;
-
-factor: PARA exp PARC { printf("Cierra parentesis\n"); }
-	| SUM { /*meterPOper(); */} varcte
-	| RES { /*meterPOper(); */} varcte 
-	| varcte 
-	;
-
-varcte: ID {}
-	| CTEE { tipocte = 'i'; } { /*meterPOperandos(); */}
-	| CTEF { tipocte = 'f'; } { /*meterPOperandos(); */}
-	| STRING { tipocte = 's'; } { /*meterPOperandos(); */}
-	| CH { tipocte = 'c';  } { /*meterPOperandos(); */}
-	| BOOLEAN { tipocte = 'b'; } { /*meterPOperandos(); */}
-	;
-
-/****FUNCIÓN****/
-=======
 /*****MULTIPLICACION Y DIVISION*****/
 
 termino: factor MULT { /*meterPOper(); */} termino
@@ -289,8 +217,7 @@ varcte: ID {/*meterPilaO(); */}
 	| BOOLEAN { tipocte = 'b'; /*meterPilaO(); */}
 	;
 
-/****FUNCIÃ“N****/
->>>>>>> 288bc3b6c5781ab8fcdce3757e6039361f0b0322
+/****FUNCIÓN****/
 
 function: tipo FUNCTION NOMBRE { if(!buscaProc($3)) {
 					insertaProc(tipo, $3);
@@ -299,40 +226,30 @@ function: tipo FUNCTION NOMBRE { if(!buscaProc($3)) {
 					printf("Error: Procedimiento existente.");
 				 }
 				}
-<<<<<<< HEAD
-	PARA function2 PARC BEGINF bloque ENDF
-	;
-
-function2: tipo ID { insertaParam(tipo, $2, proc) } function3
-=======
 	PARA function2 PARC { cParam = 0; } BEGINF bloque ENDF
 	;
 
-function2: tipo ID { insertaParam(tipo, $2, cParam) } function3
->>>>>>> 288bc3b6c5781ab8fcdce3757e6039361f0b0322
+function2: tipo ID { insertaParam(tipo, $2, cParam); cParam++; } function3
 	;
 
 function3: /* empty */
 	| COMA function2
 	;
 
-
 %%
 
 main() {
+	
 	FILE *myfile = fopen("prueba", "r");
 	if (!myfile) {
-		cout << "No se puede abrir el archivo programa!" << endl;
+		printf("No se puede abrir el archivo!");
 		return -1;
 	}
-	// set flex to read from it instead of defaulting to STDIN:
 	yyin = myfile;
-
-	// parse through the input until there is no more:
+	
 	do {
 		yyparse();
 	} while (!feof(yyin));
-
 }
 
 void yyerror(const char *s) {
