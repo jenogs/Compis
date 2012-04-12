@@ -39,50 +39,50 @@
    /* Put the tokens into the symbol table, so that GDB and other debuggers
       know about them.  */
    enum yytokentype {
-     NOMBRE = 258,
-     BEGINP = 259,
-     ENDP = 260,
-     FUNCTION = 261,
-     BEGINF = 262,
-     ENDF = 263,
-     CTEE = 264,
-     CTEF = 265,
-     IGU = 266,
-     GLOBAL = 267,
-     BOOLEAN = 268,
-     ID = 269,
-     MAY = 270,
-     MEN = 271,
-     DIF = 272,
-     IF = 273,
-     ELSE = 274,
-     PRINT = 275,
-     SUM = 276,
-     RES = 277,
-     MULT = 278,
-     DIV = 279,
-     STR = 280,
-     INT = 281,
-     FLOAT = 282,
-     PROG = 283,
-     VAR = 284,
-     EQ = 285,
-     BOOL = 286,
-     AND = 287,
-     OR = 288,
-     STRING = 289,
-     ELSEIF = 290,
-     REPEAT = 291,
-     READ = 292,
-     CHAR = 293,
-     CH = 294,
-     DP = 295,
-     PC = 296,
-     COMA = 297,
-     LLA = 298,
-     LLC = 299,
-     PARA = 300,
-     PARC = 301
+     BEGINP = 258,
+     ENDP = 259,
+     FUNCTION = 260,
+     BEGINF = 261,
+     ENDF = 262,
+     IGU = 263,
+     GLOBAL = 264,
+     MAY = 265,
+     MEN = 266,
+     DIF = 267,
+     IF = 268,
+     ELSE = 269,
+     PRINT = 270,
+     SUM = 271,
+     RES = 272,
+     MULT = 273,
+     DIV = 274,
+     STR = 275,
+     INT = 276,
+     FLOAT = 277,
+     PROG = 278,
+     VAR = 279,
+     EQ = 280,
+     BOOL = 281,
+     AND = 282,
+     OR = 283,
+     ELSEIF = 284,
+     REPEAT = 285,
+     READ = 286,
+     CHAR = 287,
+     DP = 288,
+     PC = 289,
+     COMA = 290,
+     LLA = 291,
+     LLC = 292,
+     PARA = 293,
+     PARC = 294,
+     ID = 295,
+     NOMBRE = 296,
+     STRING = 297,
+     CTEE = 298,
+     CTEF = 299,
+     BOOLEAN = 300,
+     CH = 301
    };
 #endif
 
@@ -93,9 +93,9 @@ typedef union YYSTYPE
 {
 
 /* Line 1676 of yacc.c  */
-#line 22 "SimpleFlow.y"
+#line 27 "SimpleFlow.y"
 
-	char *palabra;
+	char *string;
 
 
 

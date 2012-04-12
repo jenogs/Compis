@@ -1,11 +1,11 @@
 PROG
 
-global float algo = 3.4;
+global float pi = 3.14;
 global char b = 's';
-global string cosa = "lol";
+global string cosa = "hola";
 
 int function FUNC (int a, float b) beginf {
-	print(algo);
+	float c = a + b;
 } endf
 
 begin {

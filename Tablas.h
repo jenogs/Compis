@@ -12,6 +12,9 @@
 /* TAMANO_HASH es el tamaño de las tablas de hash */
 #define TAMANO_HASH 251
 
+/* SHIFT es la potencia de 2 usada como multiplicador en la funcion de hash  */
+#define SHIFT 4
+
 /* Espacios en memoria */
 enum memoria {
      enteros_globales =   0,
@@ -56,11 +59,11 @@ int apunta_enteros_locales = 0,
     apunta_booleanos_locales = 0;
 
 // Enteros Temporales    
-int apunta_enteros_temporales = enteros_temporales,
-    apunta_flotantes_temporales = flotantes_temporales,
-    apunta_chars_temporales = chars_temporales,
-    apunta_strings_temporales = strings_temporales,
-    apunta_booleanos_temporales = booleanos_temporales;
+int apunta_enteros_temporales = 0,
+    apunta_flotantes_temporales = 0,
+    apunta_chars_temporales = 0,
+    apunta_strings_temporales = 0,
+    apunta_booleanos_temporales = 0;
 
 // Enteros Constantes
 int apunta_enteros_const = 0,
@@ -146,16 +149,14 @@ static cteStr hashStr[TAMANO_HASH];
 static cteBool hashBool[TAMANO_HASH];
 
 /* Función de hash */
-unsigned int hash(char *key) {
-    unsigned int i;
-    unsigned int h;
-
-    h = 1315423911;
-    for (i = 0; *key; key++, i++) {
-	   h ^= ((h << 5) + (*key) + (h >> 2));
-    }
-    h &= TAMANO_HASH;
-    return h;
+static int hash (char * key) {
+	int temp = 0;
+	int i = 0;
+	while (key[i] != '\0') {
+		temp = ((temp << SHIFT) + key[i]) % TAMANO_HASH;
+		++i;
+	}
+	return temp;
 }
 
 /* Funciones de Tablas de Variables */
@@ -316,13 +317,10 @@ void imprimeProc(FILE *listing){
 // Insertar parámetros a los procedimientos
 void insertaParam(char tipo, char *id, int cParam) {
 	procs p = hashProcs[hp];
-	if(buscaProc(p->id)) {
-		p->parametro[cParam].tipo = tipo;
-		p->parametro[cParam].id = id;
-	} else {
-		printf("Error: El metodo no existe\n");
-		exit(0);
-	}
+	p = (procs)malloc(sizeof(struct tabProcs));
+	p->parametro[cParam].tipo = tipo;
+	p->parametro[cParam].id = id;
+	
 	hashProcs[hp] = p;
 }
 
@@ -389,14 +387,14 @@ int buscaCteBool(char *val){
 }
 
 // Agrega constante
-void agragaCte(char tipo, char *val){
+void agregaCte(char tipo, char *val, int auxN){
 	switch(tipo) {
 		case 'i':
 			if(buscaCteInt(val) == -1) {
 				hc = hash(val);
 				cteInt c =  hashInt[hc];
 				c = (cteInt)malloc(sizeof(struct constante_int));
-				c->val = atoi(val);
+				c->val = atoi(val)*auxN;
 				c->dirvar = enteros_const + apunta_enteros_const;
 				apunta_enteros_const++;
 				c->sig = hashInt[hc];
@@ -408,7 +406,7 @@ void agragaCte(char tipo, char *val){
 				hc = hash(val);
 				cteFloat c =  hashFloat[hc];
 				c = (cteFloat)malloc(sizeof(struct constante_float));
-				c->val = atof(val);
+				c->val = atof(val)*auxN;
 				c->dirvar = flotantes_const + apunta_flotantes_const;
 				apunta_flotantes_const++;
 				c->sig = hashFloat[hc];

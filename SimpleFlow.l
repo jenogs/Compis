@@ -9,8 +9,8 @@ using namespace std;
 
 %%
 
-[0-9]+						{ return CTEE; }
-[0-9]+"."[0-9]+					{ return CTEF; }
+[0-9]+						{ yylval.string=strdup(yytext); return CTEE; }
+[0-9]+"."[0-9]+					{ yylval.string=strdup(yytext); return CTEF; }
 ":"						{ return DP; }
 ";"						{ return PC; }
 ","						{ return COMA; }
@@ -45,11 +45,11 @@ using namespace std;
 "beginf"					{ return BEGINF; }
 "endf"						{ return ENDF; }
 "global"					{ return GLOBAL; }
-"true"|"false"					{ return BOOLEAN; }
-[A-Z0-9]+					{ return NOMBRE; }
-[a-zA-Z0-9]+					{ return ID; }
-\'[a-z|A-Z]\'					{ return CH; }
-\".+\"						{ return STRING; }
+"true"|"false"					{ yylval.string=strdup(yytext); return BOOLEAN; }
+[A-Z0-9]+					{ yylval.string=strdup(yytext); return NOMBRE; }
+[a-zA-Z0-9]+					{ yylval.string=strdup(yytext); return ID; }
+\'[a-z|A-Z]\'					{ yylval.string=strdup(yytext); return CH; }
+\".+\"						{ yylval.string=strdup(yytext); return STRING; }
 [ \t\n]						{}
 
 %%

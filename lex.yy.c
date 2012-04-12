@@ -828,12 +828,12 @@ do_action:	/* This label is used only to access EOF actions. */
 case 1:
 YY_RULE_SETUP
 #line 12 "SimpleFlow.l"
-{ return CTEE; }
+{ yylval.string=strdup(yytext); return CTEE; }
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
 #line 13 "SimpleFlow.l"
-{ return CTEF; }
+{ yylval.string=strdup(yytext); return CTEF; }
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
@@ -1008,27 +1008,27 @@ YY_RULE_SETUP
 case 37:
 YY_RULE_SETUP
 #line 48 "SimpleFlow.l"
-{ return BOOLEAN; }
+{ yylval.string=strdup(yytext); return BOOLEAN; }
 	YY_BREAK
 case 38:
 YY_RULE_SETUP
 #line 49 "SimpleFlow.l"
-{ return NOMBRE; }
+{ yylval.string=strdup(yytext); return NOMBRE; }
 	YY_BREAK
 case 39:
 YY_RULE_SETUP
 #line 50 "SimpleFlow.l"
-{ return ID; }
+{ yylval.string=strdup(yytext); return ID; }
 	YY_BREAK
 case 40:
 YY_RULE_SETUP
 #line 51 "SimpleFlow.l"
-{ return CH; }
+{ yylval.string=strdup(yytext); return CH; }
 	YY_BREAK
 case 41:
 YY_RULE_SETUP
 #line 52 "SimpleFlow.l"
-{ return STRING; }
+{ yylval.string=strdup(yytext); return STRING; }
 	YY_BREAK
 case 42:
 /* rule 42 can match eol */
