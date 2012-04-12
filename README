@@ -4,3 +4,8 @@ Tablas.c
 prueba
 SimpleFlow.y
 SimpleFlow.l
+Cuadruplos.h
+Cubo.h
+Pilas.h
+
+***Falta la busqueda de variables locales
