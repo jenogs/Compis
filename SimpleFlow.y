@@ -1,9 +1,12 @@
 %{
 #include <cstdio>
 #include <iostream>
+#include <string.h>
+#include <stdlib.h>
 #include "Tablas.h"
 #include "Pilas.h"
 #include "Cuadruplos.h"
+#include "Cubo.h"
 
 using namespace std;
 
@@ -15,17 +18,21 @@ void yyerror(const char *s);
 
 char tipo;
 char tipocte;
-char nombreProc[251];
-int tipoAux;
+char scope;
+char flagTipo; //Bandera usada para revision del tipo en la asignación
+int tipoAux; //Auxiliar para el tipo de variable en la asignación
 int cParam = 0;
 int aux = 0;
 int op; //operador
 
 void generacionDeCuadruplos(int oper);
+void asignaTipoAux(char tipo);
+char * subString(char* str, int start, int length);
 
 %}
 
 %union {
+	char ch;
 	char *string;
 };
 
@@ -47,7 +54,7 @@ void generacionDeCuadruplos(int oper);
 
 %%
 
-programa: NOMBRE { insertaProc('n', $1); } asignaglobal programa2 BEGINP bloque ENDP { printf("Programa completo\n"); }
+programa: NOMBRE { insertaProc('n', $1); scope = 'g'; } asignaglobal programa2 BEGINP { scope = 'l'; } bloque ENDP { printf("Programa completo\n"); }
 	;
 
 programa2: /* empty */
@@ -57,26 +64,26 @@ programa2: /* empty */
 /*****ASIGNACION GLOBAL*****/
 
 asignaglobal: /* empty */
-	| GLOBAL asignaciong asignaglobal { printf("Asignacion global\n"); }
+	| GLOBAL asignaciong asignaglobal
 	;
 
-asignaciong: tipo ID EQ asigna2 PC { pushPOper(300); tipoAux = $1;
-				    if(buscaVar($2) != -1){
+asignaciong: tipo ID EQ asigna2 PC { pushPOper(300); asignaTipoAux(tipo);
+				    if(buscaVar($2, 'g') != -1){
 					if(tipo == 'n') {
-						if(cubo[cimaPTipos][tipoAux][8] != 'x') {
-							generaCuadruplo(popPOper(), popPilaO(), -1, buscaVar($2));
+						if(cubo[cimaPTipos()][tipoAux][8] != 'x') {
+							generaCuadruplo(popPOper(), popPilaO(), -1, buscaVar($2, 'g'));
 						}
 					} else {
-						printf("Error: Variable global existente: %s", $2);
+						printf("Error: Variable global existente: %s\n", $2);
 					}
 				    } else {
-					if(cubo[cimaPTipos][tipoAux][8] != 'x') {
-						insertaVarGlobal(tipo, $2);
-						printf("Asignacion Completa en tabla de Variables Globales\n");
-						generaCuadruplo(popPOper(), popPilaO(), -1, buscaVar($2));
+					insertaVarGlobal(tipo, $2);
+					printf("Asignacion Completa en tabla de Variables Globales\n");
+					if(cubo[cimaPTipos()][tipoAux][8] != 'x') {
+						generaCuadruplo(popPOper(), popPilaO(), -1, buscaVar($2, 'g'));
 						
 					} else {
-						printf("Error: Tipos no compatibles");
+						printf("Error: Tipos no compatibles\n");
 					}
 				   }
 				}
@@ -128,21 +135,26 @@ condicion3: /* empty */
 
 /*****ASIGNACION LOCAL*****/
 
-asignacion: tipo ID EQ asigna2 PC { if(buscaVar($2) != -1){
+asignacion: tipo ID EQ asigna2 PC { pushPOper(300); asignaTipoAux(tipo);
+				    if(buscaVar($2, 'l') != -1){
 					if(tipo == 'n') {
-						//asigna
+						if(cubo[cimaPTipos()][tipoAux][8] != 'x') {
+							generaCuadruplo(popPOper(), popPilaO(), -1, buscaVar($2, 'l'));
+						}
 					} else {
-						printf("Error: Variable local existente: %s", $2);
+						printf("Error: Variable global existente: %s\n", $2);
 					}
 				    } else {
-					if(tipo == tipocte) {
-						insertaVar(tipo, $2, nombreProc);
-						printf("Asignacion Completa\n");
+					insertaVar(tipo, $2);
+					printf("Asignacion Completa en tabla de Variables Locales\n");
+					if(cubo[cimaPTipos()][tipoAux][8] != 'x') {
+						generaCuadruplo(popPOper(), popPilaO(), -1, buscaVar($2, 'l'));
+						
 					} else {
-						printf("Error: Tipos no compatibles");
+						printf("Error: Tipos no compatibles\n");
 					}
-				     }
 				   }
+				}
 	;
 
 asigna2: exp
@@ -152,11 +164,11 @@ asigna2: exp
 /*****TIPO DE DATO*****/
 
 tipo:	/* empty*/ { tipo = 'n'; }
-	| INT { tipo = 'i'; $$ = 0; }
-	| FLOAT { tipo = 'f'; $$ = 1; }
-	| BOOL { tipo = 'b'; $$ = 4; }
-	| CHAR { tipo = 'c'; $$ = 2; }
-	| STR { tipo = 's'; $$ = 3; }
+	| INT { tipo = 'i'; }
+	| FLOAT { tipo = 'f'; }
+	| BOOL { tipo = 'b'; }
+	| CHAR { tipo = 'c'; }
+	| STR { tipo = 's'; }
 	;
 
 /*****ESCRITURA*****/
@@ -240,19 +252,18 @@ factor: PARA exp PARC
 
 /*****VARIABLES CONSTANTES*****/
 
-varcte: ID { op = buscaVar($1); pushPilaO(op); }
+varcte: ID { op = buscaVar($1, scope); pushPilaO(op); }
 	| CTEE { agregaCte('i', $1, aux); tipocte = 'i'; op = buscaCteInt($1); pushPilaO(op); pushPTipos(0); }
 	| CTEF { agregaCte('f', $1, aux); tipocte = 'f'; op = buscaCteFloat($1); pushPilaO(op); pushPTipos(1); } 
-	| STRING { agregaCte('s', $1, 0); tipocte = 's'; op = buscaCteChar($1); pushPilaO(op); pushPTipos(2); }
-	| CH { agregaCte('c', $1, 0); tipocte = 'c'; op = buscaCteStr($1); pushPilaO(op); pushPTipos(3); }
+	| STRING { printf("%s\n",$1); agregaCte('s', subString($1, 1, strlen($1)), 0); tipocte = 's'; op = buscaCteChar($1); pushPilaO(op); pushPTipos(2); }
+	| CH {  printf("%s\n",$1);agregaCte('c', subString($1, 1, strlen($1)), 0); tipocte = 'c'; op = buscaCteStr($1); pushPilaO(op); pushPTipos(3); }
 	| BOOLEAN { agregaCte('b', $1, 0); tipocte = 'b'; op = buscaCteBool($1); pushPilaO(op); pushPTipos(4); }
 	;
 
 /****FUNCIÓN****/
 
-function: tipo FUNCTION NOMBRE { if(buscaProc($3) != -1) {
+function: tipo FUNCTION NOMBRE { scope = 'l'; if(buscaProc($3) != -1) {
 					insertaProc(tipo, $3);
-					strcpy(nombreProc, $3);
 				 } else {
 					printf("Error: Procedimiento existente.");
 				 }
@@ -268,79 +279,6 @@ function3: /* empty */
 	;
 
 %%
-
-/*==============================================*/
-/*						*/
-/*			CUBO			*/
-/*						*/
-/*==============================================*/
- 
-/*============*/
-/*   Tipos    */
-/*============*/
-//Int	 	= 0;
-//Float 	= 1;
-//Char 		= 2;
-//String 	= 3;
-//Bool 		= 4;
-
-/*=================*/
-/*    Operadores   */
-/*=================*/
-//Suma 			= 0
-//Resta 		= 1
-//Multiplicacion 	= 2
-//Division 		= 3
-//&& 			= 4 //and
-//|| 			= 5 //or
-//> 			= 6 //mayor que
-//< 			= 7 //menor que
-//= 			= 8 //igual
-//== 			= 9 //igualdad
-//!= 			= 10 //diferencia
-
-/* Salidas */
-char i = 'i'; //int 
-char f = 'f'; //float
-char c = 'c'; //char
-char s = 's'; //string
-char b = 'b'; //bool
-char x = 'x'; //error
-
-/* Cubo */
-
-//cubo[Tipo1][Tipo2][Operador]
-
-char cubo[5][5][11] =   /* Enteros */
-		       {{{i,i,i,i,b,b,b,b,i,b,b},
-			{f,f,f,f,b,b,b,b,x,b,b},
-			{x,x,x,x,x,x,x,x,x,x,x},
-			{x,x,x,x,x,x,x,x,x,x,x},
-			{x,x,x,x,x,x,x,x,x,x,x}},
-			/* Flotantes */
-		       {{f,f,f,f,b,b,b,b,f,b,b},
-			{f,f,f,f,b,b,b,b,f,b,b},
-			{x,x,x,x,x,x,x,x,x,x,x},
-			{x,x,x,x,x,x,x,x,x,x,x},
-			{x,x,x,x,x,x,x,x,x,x,x}},
-			/* Char */
-		       {{x,x,x,x,x,x,x,x,x,x,x},
-			{x,x,x,x,x,x,x,x,x,x,x},
-			{x,x,x,x,x,x,x,x,c,b,b},
-			{x,x,x,x,x,x,x,x,x,b,b},
-			{x,x,x,x,x,x,x,x,x,x,x}},
-			/* String */
-		       {{x,x,x,x,x,x,x,x,x,x,x},
-			{x,x,x,x,x,x,x,x,x,x,x},
-			{x,x,x,x,x,x,x,x,x,b,b},
-			{x,x,x,x,x,x,x,x,s,b,b},
-			{x,x,x,x,x,x,x,x,x,x,x}},
-			/* Bool */
-		       {{x,x,x,x,x,x,x,x,x,x,x},
-			{x,x,x,x,x,x,x,x,x,x,x},
-			{x,x,x,x,x,x,x,x,x,x,x},
-			{x,x,x,x,x,x,x,x,x,x,x},
-			{x,x,x,x,x,x,x,x,b,b,b}}};
 
 /* Generación de Cuadruplos */
 void generacionDeCuadruplos(int oper){
@@ -417,9 +355,35 @@ void generacionDeCuadruplos(int oper){
 			apunta_booleanos_temporales++;
 			break;
 		case 'x':
-			printf("Error: Tipos incompatibles (cuadruplos)");
+			printf("Error: Tipos incompatibles (cuadruplos)\n");
 			break;
 	}
+}
+
+void asignaTipoAux(char tipo) {
+	if(tipo == 'i') {
+		tipoAux = 0;
+	} else if(tipo == 'f') {
+		tipoAux = 1;
+	} else if(tipo == 'c') {
+		tipoAux = 2;
+	} else if(tipo == 's') {
+		tipoAux = 3;
+	} else if(tipo == 'b') {
+		tipoAux = 4;
+	} else {
+		printf("Error: Tipo no aplicable\n");
+	}
+}
+
+char * subString(char* str, int start, int length) {
+	char *newString = (char *)malloc(length * sizeof(char));
+	int i, x = 0;
+	int end=start+length;
+	for(i = start ; i < end; i++)
+		newString[x++] = str[i];
+	newString[x] = '\0';
+	return newString;
 }
 
 /* Funcion Main */
@@ -435,6 +399,8 @@ main() {
 	do {
 		yyparse();
 	} while (!feof(yyin));
+
+	imprimeCuadruplos();
 
 	//imprimeVar(myfile);
 	//imprimeProc(myfile);

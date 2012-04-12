@@ -99,7 +99,6 @@ typedef struct tabProcs{
 	char tipo;
 	char *id;
 	struct params parametro[50];
-	vars stv[TAMANO_HASH];
 } *procs;
 
 // Estructuras de Constantes
@@ -137,6 +136,9 @@ typedef struct constante_bool{
 
 // Tabla de variables global
 static vars hashVars[TAMANO_HASH];
+
+// Tabla de variables local
+static vars hashVarsLocal[TAMANO_HASH];
 
 // Directorio de Procedimientos
 static procs hashProcs[TAMANO_HASH];
@@ -198,51 +200,60 @@ void insertaVarGlobal(char tipo, char *id) {
 }
 
 // Insertar variable Local
-void insertaVar(char tipo, char *id, char *idProc) {
-	hp = hash(idProc);	
+void insertaVar(char tipo, char *id) {
 	hv = hash(id);
-	procs p = hashProcs[hp];
+	vars v =  hashVarsLocal[hv];
 
-	p = (procs)malloc(sizeof(struct tabProcs));
-	p->stv[hv]->tipo = tipo;
-	p->stv[hv]->id = id;
+	v = (vars)malloc(sizeof(struct tabVars));
+	v->tipo = tipo;
+	v->id = id;
 	switch (tipo){
 		case 'c':
-			p->stv[hv]->dirvar = chars_locales + apunta_chars_locales;
+			v->dirvar = chars_locales + apunta_chars_locales;
 			apunta_chars_locales++;
 			break;
 		case 'i':
-			p->stv[hv]->dirvar = enteros_locales + apunta_enteros_locales;
+			v->dirvar = enteros_locales + apunta_enteros_locales;
 			apunta_enteros_locales++;
 			break;
 		case 'f':
-			p->stv[hv]->dirvar = flotantes_locales + apunta_flotantes_locales;
+			v->dirvar = flotantes_locales + apunta_flotantes_locales;
 			apunta_flotantes_locales++;
 			break;
 		case 'b':
-			p->stv[hv]->dirvar = booleanos_locales + apunta_booleanos_locales;
+			v->dirvar = booleanos_locales + apunta_booleanos_locales;
 			apunta_booleanos_locales++;
 			break;
 		case 's':
-			p->stv[hv]->dirvar = strings_locales + apunta_strings_locales;
+			v->dirvar = strings_locales + apunta_strings_locales;
 			apunta_strings_locales++;
 			break;
 	}
 
-	p->sig = hashProcs[hp];
-	hashProcs[hp] = p;
+	v->sig = hashVarsLocal[hv];
+	hashVarsLocal[hv] = v;
 }
 
 // Buscar Variables en tabla
-int buscaVar(char *id) {
+int buscaVar(char *id, char scope) {
 	hv = hash(id);
-	vars v =  hashVars[hv];
-	while ((v != NULL) && (strcmp(id,v->id) != 0))
-		v = v->sig;
-	if (v == NULL)
-		return -1;
-	else
-		return v->dirvar;
+	if(scope == 'g') {
+		vars v =  hashVars[hv];
+		while ((v != NULL) && (strcmp(id,v->id) != 0))
+			v = v->sig;
+		if (v == NULL)
+			return -1;
+		else
+			return v->dirvar;
+	} else if(scope == 'l') {
+		vars v =  hashVarsLocal[hv];
+		while ((v != NULL) && (strcmp(id,v->id) != 0))
+			v = v->sig;
+		if (v == NULL)
+			return -1;
+		else
+			return v->dirvar;
+	}
 }
 
 // Imprime tabla de variables 

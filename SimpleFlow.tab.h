@@ -93,14 +93,15 @@ typedef union YYSTYPE
 {
 
 /* Line 1676 of yacc.c  */
-#line 27 "SimpleFlow.y"
+#line 34 "SimpleFlow.y"
 
+	char ch;
 	char *string;
 
 
 
 /* Line 1676 of yacc.c  */
-#line 104 "SimpleFlow.tab.h"
+#line 105 "SimpleFlow.tab.h"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */

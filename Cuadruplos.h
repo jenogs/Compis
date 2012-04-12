@@ -22,6 +22,14 @@ void generaCuadruplo(int operador, int operando1, int operando2, int resultado){
 	apunta_cuadruplo++;
 }
 
+void imprimeCuadruplos(){
+	int i;
+	for(i=0;i<apunta_cuadruplo;i++){
+		printf("%d: (%d, %d ,%d ,%d)\n",i, cuad[i].operador,cuad[i].operando1,cuad[i].operando2,cuad[i].resultado);
+	}
+}
+
+
 /*
 typedef vars *ptrNodoVars;
 typedef vars *ptrPilaVars;
