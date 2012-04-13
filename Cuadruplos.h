@@ -3,6 +3,25 @@
 
 int apunta_cuadruplo = 0;
 
+/*============
+100 = SUM
+101 = RES
+102 = MULT
+103 = DIV
+200 = AND
+201 = OR
+202 = MAY
+203 = MEN
+204 = DIF
+205 = IGU
+300 = EQ
+
+400 = GoTo
+401 = GoToF
+405 = Print
+410 = Return
+===============*/
+
 /* Estructura de un cuádruplo */
 struct cuadruplo{
      int operador;
@@ -22,69 +41,47 @@ void generaCuadruplo(int operador, int operando1, int operando2, int resultado){
 	apunta_cuadruplo++;
 }
 
+void generaCuadruploPrint(int resultado) {
+	cuad[apunta_cuadruplo].operador = 405;
+	cuad[apunta_cuadruplo].operando1 = -1;
+	cuad[apunta_cuadruplo].operando2 = -1;
+	cuad[apunta_cuadruplo].resultado = resultado;
+	apunta_cuadruplo++;
+}
+
+void generaRetorno(){
+	cuad[apunta_cuadruplo].operador = 410;
+	cuad[apunta_cuadruplo].operando1 = -1;
+	cuad[apunta_cuadruplo].operando2 = -1;
+	cuad[apunta_cuadruplo].resultado = -1;
+	apunta_cuadruplo++;
+}
+
+void generaGoTo(){
+	cuad[apunta_cuadruplo].operador = 400;
+	cuad[apunta_cuadruplo].operando1 = -1;
+	cuad[apunta_cuadruplo].operando2 = -1;
+	apunta_cuadruplo++;
+}
+
+void generaGoToF(int operando1) {
+	cuad[apunta_cuadruplo].operador = 401;
+	cuad[apunta_cuadruplo].operando1 = operando1;
+	cuad[apunta_cuadruplo].operando2 = -1;
+	apunta_cuadruplo++;
+}
+
+void rellenaGoTo(int apuntador, int resultado){
+	cuad[apuntador].resultado = resultado;
+}
+
+void rellenaGoToF(int apuntador, int resultado){
+	cuad[apuntador].resultado = resultado;
+}
+
 void imprimeCuadruplos(){
 	int i;
 	for(i=0;i<apunta_cuadruplo;i++){
-		printf("%d: (%d, %d ,%d ,%d)\n",i, cuad[i].operador,cuad[i].operando1,cuad[i].operando2,cuad[i].resultado);
+		printf("%d: (%d, %d, %d, %d)\n",i, cuad[i].operador,cuad[i].operando1,cuad[i].operando2,cuad[i].resultado);
 	}
 }
-
-
-/*
-typedef vars *ptrNodoVars;
-typedef vars *ptrPilaVars;
-
-typedef vars *ptrNodoProcs;
-typedef vars *ptrPilaProcs;
-*/
-
-
-/*
-void pushVars(ptrPilaVars *pilavar, char id_v, struct siguiente_v, char tipo_v, char scope_v, int dirvar_v) {
-	ptrNodoVars nodo;
-	nodo = (ptrNodoVars)malloc(sizeof(vars));
-	if (nodo != NULL) {
-		nodo->*id = id;
-		nodo->tipo = tipo_v;
-		nodo->scope = scope_v;
-		nodo->dirvar = dirvar_v;
-		nodo->*sig = *pilavar;
-	// pila va a apuntar al nuevo nodo, con esto hacemos que el nuevo nodo sea ahora el primer nodo de la lista ligada
-		*pilavar = nodo;
-	}
-}
-
-char popVarss(ptrPilaVars *pila) {
-	ptrNodoVars nodo;
-	//struct x;
-	//nodo = *pila;
-	//x = (*pila)->dato;
-	*pila = (*pila)->sig;
-	free(nodo);
-	return x;
-}
-    
-void pushProcs(ptrPilaProcs *pilaproc, char tipo_p, char *id_p, struct parametro_p, vars stv_p) {
-	ptrNodoProcs nodo;
-	nodo = (ptrNodoProcs)malloc(sizeof(procs));
-	if (nodo != NULL) {
-		nodo->*id = id_p;
-		nodo->tipo = tipo_p;
-		nodo->parametro = *parametro_p;
-		nodo->stv_p = *stv_p;
-		nodo->*sig = *pilaproc;
-	// pila va a apuntar al nuevo nodo, con esto hacemos que el nuevo nodo sea ahora el primer nodo de la lista ligada
-		*pilaproc = nodo;
-	}
-}
-
-char popProcs(ptrPilaProcs *pila) {
-	ptrNodoProcs nodo;
-	//struct x;
-	//nodo = *pila;
-	//x = (*pila)->dato;
-	*pila = (*pila)->sig;
-	free(nodo);
-	return x;
-}
-*/

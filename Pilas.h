@@ -38,7 +38,7 @@ int popPOper(){
 }
 
 int cimaPOper(){
-	return PilaO[topePOper-1];
+	return POper[topePOper-1];
 }
 
 int pushPTipos(int i){

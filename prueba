@@ -1,11 +1,12 @@
 PROG
 
-global float pi = 3.14;
+global float pi = 3.14 + 0.0016;
 global char b = 's';
 global string cosa = "hola";
 
 int function SUMA (int a, float b) beginf {
 	float c = a + b;
+	return(c);
 } endf
 
 begin {
@@ -13,13 +14,12 @@ begin {
 	int temp = 5 + 2;
 	int temp2 = 3;
 
-	if ((temp > temp2) && (id < id2)) {
-		print(temp);
-		print(temp);
-                if (temp) {
-			a = 5;
+	if ((temp > temp2) && (pi < temp)) {
+		print(temp + temp2, temp);
+                if (temp == 3) {
+			temp = 5;
 		} else {
-			c = 2;
+			temp2 = 2;
 		}
 	}
 

@@ -40,6 +40,7 @@ using namespace std;
 "char"						{ return CHAR; }
 "begin"						{ return BEGINP; }
 "end"						{ return ENDP; }
+"return"					{ return RETURN; }
 "repeat"					{ return REPEAT; }
 "function"					{ return FUNCTION; }
 "beginf"					{ return BEGINF; }

@@ -86,19 +86,13 @@ typedef struct tabVars{
 	char *id;
 	int dirvar;
 } *vars;
-
-// Estructura de parámetros para los procedimientos
-struct params{
-	char tipo;
-	char *id;
-};
  
 // Estructura de Directorio de Procedimientos
 typedef struct tabProcs{
 	struct tabProcs *sig;
 	char tipo;
 	char *id;
-	struct params parametro[50];
+	char parametro[50];
 } *procs;
 
 // Estructuras de Constantes
@@ -237,8 +231,9 @@ void insertaVar(char tipo, char *id) {
 // Buscar Variables en tabla
 int buscaVar(char *id, char scope) {
 	hv = hash(id);
+	vars v =  hashVars[hv];
+	vars vl =  hashVarsLocal[hv];
 	if(scope == 'g') {
-		vars v =  hashVars[hv];
 		while ((v != NULL) && (strcmp(id,v->id) != 0))
 			v = v->sig;
 		if (v == NULL)
@@ -246,13 +241,18 @@ int buscaVar(char *id, char scope) {
 		else
 			return v->dirvar;
 	} else if(scope == 'l') {
-		vars v =  hashVarsLocal[hv];
-		while ((v != NULL) && (strcmp(id,v->id) != 0))
-			v = v->sig;
-		if (v == NULL)
-			return -1;
-		else
-			return v->dirvar;
+		while ((vl != NULL) && (strcmp(id,vl->id) != 0))
+			vl = v->sig;
+		if (vl == NULL) {
+			while ((v != NULL) && (strcmp(id,v->id) != 0))
+				v = v->sig;
+			if (v == NULL)
+				return -1;
+			else
+				return v->dirvar;
+		} else {
+			return vl->dirvar;
+		}
 	}
 }
 
@@ -326,12 +326,10 @@ void imprimeProc(FILE *listing){
 }
 
 // Insertar parámetros a los procedimientos
-void insertaParam(char tipo, char *id, int cParam) {
+void insertaParam(char tipo, int cParam) {
 	procs p = hashProcs[hp];
 	p = (procs)malloc(sizeof(struct tabProcs));
-	p->parametro[cParam].tipo = tipo;
-	p->parametro[cParam].id = id;
-	
+	p->parametro[cParam] = tipo;	
 	hashProcs[hp] = p;
 }
 
@@ -344,9 +342,9 @@ int buscaCteInt(char *val){
 	while ((c != NULL) && (atoi(val) != c->val))
 		c = c->sig;
 	if (c == NULL)
-		return -1;
-	else
 		return hc;
+	else
+		return -1;
 }
 
 // Busca constante flotante
@@ -356,9 +354,9 @@ int buscaCteFloat(char *val){
 	while ((c != NULL) && (atof(val) != c->val))
 		c = c->sig;
 	if (c == NULL)
-		return -1;
-	else
 		return hc;
+	else
+		return -1;
 }
 
 // Busca constante char
@@ -368,9 +366,9 @@ int buscaCteChar(char *val){
 	while ((c != NULL) && (strcmp(val,c->val) != 0))
 		c = c->sig;
 	if (c == NULL)
-		return -1;
-	else
 		return hc;
+	else
+		return -1;
 }
 
 // Busca constante string
@@ -380,9 +378,9 @@ int buscaCteStr(char *val){
 	while ((c != NULL) && (strcmp(val,c->val) != 0))
 		c = c->sig;
 	if (c == NULL)
-		return -1;
-	else
 		return hc;
+	else
+		return -1;
 }
 
 // Busca constante booleana
@@ -392,9 +390,9 @@ int buscaCteBool(char *val){
 	while ((c != NULL) && (strcmp(val,c->val) != 0))
 		c = c->sig;
 	if (c == NULL)
-		return -1;
-	else
 		return hc;
+	else
+		return -1;
 }
 
 // Agrega constante
@@ -405,7 +403,7 @@ void agregaCte(char tipo, char *val, int auxN){
 				hc = hash(val);
 				cteInt c =  hashInt[hc];
 				c = (cteInt)malloc(sizeof(struct constante_int));
-				c->val = atoi(val)*auxN;
+				c->val = auxN*atoi(val);
 				c->dirvar = enteros_const + apunta_enteros_const;
 				apunta_enteros_const++;
 				c->sig = hashInt[hc];
@@ -417,7 +415,7 @@ void agregaCte(char tipo, char *val, int auxN){
 				hc = hash(val);
 				cteFloat c =  hashFloat[hc];
 				c = (cteFloat)malloc(sizeof(struct constante_float));
-				c->val = atof(val)*auxN;
+				c->val = auxN*atof(val);
 				c->dirvar = flotantes_const + apunta_flotantes_const;
 				apunta_flotantes_const++;
 				c->sig = hashFloat[hc];

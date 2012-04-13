@@ -17,13 +17,13 @@ extern "C" FILE *yyin;
 void yyerror(const char *s);
 
 char tipo;
-char tipocte;
 char scope;
 char flagTipo; //Bandera usada para revision del tipo en la asignación
 int tipoAux; //Auxiliar para el tipo de variable en la asignación
 int cParam = 0;
 int aux = 0;
 int op; //operador
+int auxif;
 
 void generacionDeCuadruplos(int oper);
 void asignaTipoAux(char tipo);
@@ -36,8 +36,8 @@ char * subString(char* str, int start, int length);
 	char *string;
 };
 
-%token BEGINP ENDP FUNCTION BEGINF ENDF IGU GLOBAL
-%token MAY MEN DIF IF ELSE PRINT SUM RES MULT DIV STR INT FLOAT PROG VAR EQ BOOL AND OR ELSEIF REPEAT READ CHAR
+%token BEGINP ENDP FUNCTION BEGINF ENDF IGU GLOBAL RETURN
+%token MAY MEN DIF IF ELSE PRINT SUM RES MULT DIV STR INT FLOAT PROG VAR EQ BOOL AND OR REPEAT READ CHAR
 %token DP PC COMA LLA LLC PARA PARC
 
 %token <string> ID
@@ -54,7 +54,7 @@ char * subString(char* str, int start, int length);
 
 %%
 
-programa: NOMBRE { insertaProc('n', $1); scope = 'g'; } asignaglobal programa2 BEGINP { scope = 'l'; } bloque ENDP { printf("Programa completo\n"); }
+programa: NOMBRE { insertaProc('n', $1); scope = 'g'; generaGoTo(); pushPSaltos(apunta_cuadruplo-1); } asignaglobal programa2 BEGINP { scope = 'l'; rellenaGoTo(popPSaltos(), apunta_cuadruplo); } bloque ENDP { printf("Programa completo\n"); }
 	;
 
 programa2: /* empty */
@@ -122,15 +122,21 @@ funcion3: /* empty */
 
 /*****Condición*****/
 
-condicion: IF PARA expresion PARC bloque condicion2 condicion3 { printf("Condicion Completa\n"); }
+condicion: IF PARA expresion PARC { auxif = popPTipos();
+				if(auxif != 4) {
+					printf("Error: Error Semantico");
+				} else {
+					generaGoToF(popPilaO());
+					pushPSaltos(apunta_cuadruplo-1);
+				}} 
+	bloque condicion2 { printf("Condicion Completa\n"); }
 	;
 
-condicion2: /* empty */
-	| ELSEIF PARA expresion PARC bloque condicion2
+condicion2: ELSE { generaGoTo(); rellenaGoToF(popPSaltos(), apunta_cuadruplo); pushPSaltos(apunta_cuadruplo-1); } bloque { printf("apuntador = %i\n",apunta_cuadruplo);rellenaGoTo(popPSaltos(), apunta_cuadruplo); }
+	| condicion3
 	;
 
-condicion3: /* empty */
-	| ELSE bloque
+condicion3: { rellenaGoToF(popPSaltos(), apunta_cuadruplo); }
 	;
 
 /*****ASIGNACION LOCAL*****/
@@ -176,8 +182,8 @@ tipo:	/* empty*/ { tipo = 'n'; }
 escritura: PRINT PARA escritura2 PARC PC { printf("Escritura Completa\n"); }
 	;
 
-escritura2: exp COMA escritura2
-	| exp
+escritura2: exp { generaCuadruploPrint(popPilaO()); } COMA escritura2
+	| exp { generaCuadruploPrint(popPilaO()); }
 	;
 
 /*****LECTURA*****/
@@ -187,13 +193,12 @@ lectura: READ PARA ID PARC PC { printf("Lectura completa\n"); }
 
 /*****CICLO*****/
 
-ciclo: REPEAT varcte bloque { printf("Ciclo completo\n"); }
+ciclo: REPEAT varcte bloque {printf("Ciclo completo\n"); }
 	;
 
 /*****EXPRESION*****/
 
 expresion: expresion2 operadorl { printf("Termina expresion\n"); }
-	|  varcte { printf("Termina expresion booleana\n"); }
 	;
 
 expresion2: exp MAY { pushPOper(202); } exp { if(cimaPOper() == 202) {
@@ -222,24 +227,36 @@ operadorl: /* empty */
 
 /*****SUMA Y RESTA*****/
 
-exp: 	termino { if(cimaPOper() == 100) {
+exp: 	termino exp1 exp11
+	;
+
+exp1: { if(cimaPOper() == 100) {
 		  	generacionDeCuadruplos(0);
-		}} SUM { pushPOper(100); } exp
-	| termino { if(cimaPOper() == 101) {
+	} else if(cimaPOper() == 101) {
 		  	generacionDeCuadruplos(1);
-		}} RES { pushPOper(101); } exp
-	| termino
+	}} 
+	;
+
+exp11: /* empty */
+	|SUM { pushPOper(100); } exp
+	| RES { pushPOper(101); } exp
 	;
 
 /*****MULTIPLICACION Y DIVISION*****/
 
-termino: factor { if(cimaPOper() == 102) {
+termino: factor termino1 termino11
+	;
+
+termino1: { if(cimaPOper() == 102) {
 		  	generacionDeCuadruplos(2);
-		}} MULT { pushPOper(102); } termino
-	| factor { if(cimaPOper() == 103) {
+	} else if(cimaPOper() == 103) {
 		  	generacionDeCuadruplos(3);
-		}} DIV { pushPOper(103); } termino
-	| factor
+	}}
+	;
+
+termino11: /* empty */
+	| MULT { pushPOper(102); } termino
+	| DIV { pushPOper(103); } termino
 	;
 
 /***Factor positivo o negativo***/
@@ -253,25 +270,27 @@ factor: PARA exp PARC
 /*****VARIABLES CONSTANTES*****/
 
 varcte: ID { op = buscaVar($1, scope); pushPilaO(op); }
-	| CTEE { agregaCte('i', $1, aux); tipocte = 'i'; op = buscaCteInt($1); pushPilaO(op); pushPTipos(0); }
-	| CTEF { agregaCte('f', $1, aux); tipocte = 'f'; op = buscaCteFloat($1); pushPilaO(op); pushPTipos(1); } 
-	| STRING { printf("%s\n",$1); agregaCte('s', subString($1, 1, strlen($1)), 0); tipocte = 's'; op = buscaCteChar($1); pushPilaO(op); pushPTipos(2); }
-	| CH {  printf("%s\n",$1);agregaCte('c', subString($1, 1, strlen($1)), 0); tipocte = 'c'; op = buscaCteStr($1); pushPilaO(op); pushPTipos(3); }
-	| BOOLEAN { agregaCte('b', $1, 0); tipocte = 'b'; op = buscaCteBool($1); pushPilaO(op); pushPTipos(4); }
+	| CTEE { agregaCte('i', $1, aux); op = buscaCteInt($1); pushPilaO(op); pushPTipos(0); }
+	| CTEF { agregaCte('f', $1, aux); op = buscaCteFloat($1); pushPilaO(op); pushPTipos(1); } 
+	| STRING { agregaCte('s', subString($1, 1, strlen($1)), 0); op = buscaCteChar($1); pushPilaO(op); pushPTipos(3); }
+	| CH { agregaCte('c', subString($1, 1, strlen($1)), 0); op = buscaCteStr($1); pushPilaO(op); pushPTipos(2); }
+	| BOOLEAN { agregaCte('b', $1, 0); op = buscaCteBool($1); pushPilaO(op); pushPTipos(4); }
 	;
 
 /****FUNCIÓN****/
 
-function: tipo FUNCTION NOMBRE { scope = 'l'; if(buscaProc($3) != -1) {
+function: tipo FUNCTION NOMBRE { scope = 'l';
+				if(buscaProc($3) == -1) {
 					insertaProc(tipo, $3);
+					printf("Inserto Procedimiento a directorio.\n");
 				 } else {
-					printf("Error: Procedimiento existente.");
+					printf("Error: Procedimiento existente.\n");
 				 }
 				}
-	PARA function2 PARC { cParam = 0; } BEGINF bloque ENDF
+	PARA function2 PARC { cParam = 0; } BEGINF LLA bloque2 RETURN PARA exp PARC PC LLC ENDF { generaRetorno(); }
 	;
 
-function2: tipo ID { insertaParam(tipo, $2, cParam); cParam++; } function3
+function2: tipo ID { insertaParam(tipo, cParam); cParam++; insertaVar(tipo, $2); printf("Inserto Parametro.\n");} function3
 	;
 
 function3: /* empty */

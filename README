@@ -8,4 +8,24 @@ Cuadruplos.h
 Cubo.h
 Pilas.h
 
-***Falta la busqueda de variables locales
+--A Reparar--
+
+0. Errores que marca dentro del archivo prueba al probar el programa
+
+1. Hay que reiniciar la tabla de variables locales cada vez que sale de una función
+
+2. El GoTo del main esta recibiendo otra dirección que no es la del main
+
+3. Hay que checar funciones
+	Que el valor del return tenga el mismo tipo que la funcion
+
+4. Faltan cuadruplos de:
+	ciclo
+	lectura -> no entiendo qué hace este pedo
+	funcion
+
+5. en Cuadruplos.h 
+	1. void generaRetorno() hay que revisar el retorno -> RET (Retorno)
+	2. Falta ERA para funciones
+	3. Falta GOSUB
+	
