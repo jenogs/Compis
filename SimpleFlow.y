@@ -287,7 +287,7 @@ function: tipo FUNCTION NOMBRE { scope = 'l';
 					printf("Error: Procedimiento existente.\n");
 				 }
 				}
-	PARA function2 PARC { cParam = 0; } BEGINF LLA bloque2 RETURN PARA exp PARC PC LLC ENDF { generaRetorno(); }
+	PARA function2 PARC { cParam = 0; } BEGINF LLA bloque2 RETURN PARA exp PARC PC LLC ENDF { reiniciaTablaVar(); generaRetorno(); }
 	;
 
 function2: tipo ID { insertaParam(tipo, cParam); cParam++; insertaVar(tipo, $2); printf("Inserto Parametro.\n");} function3

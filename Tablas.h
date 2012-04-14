@@ -274,6 +274,13 @@ void imprimeVar(FILE *listing) {
 	}
 }
 
+// Reinicia Tabla de variables locales
+void reiniciaTablaVar() {
+	int i;
+	for(i = 0; i < TAMANO_HASH; i++)
+		hashVarsLocal[i] = 0;
+}
+
 /* Funciones de Directorio de Procedimientos */
 
 // Insertar Procedimiento

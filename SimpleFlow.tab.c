@@ -2001,7 +2001,7 @@ yyreduce:
 
 /* Line 1455 of yacc.c  */
 #line 290 "SimpleFlow.y"
-    { generaRetorno(); ;}
+    { reiniciaTablaVar(); generaRetorno(); ;}
     break;
 
   case 88:
