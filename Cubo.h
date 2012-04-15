@@ -69,4 +69,4 @@ char cubo[5][5][11] =   /* Enteros */
 			{x,x,x,x,x,x,x,x,x,x,x},
 			{x,x,x,x,x,x,x,x,x,x,x},
 			{x,x,x,x,x,x,x,x,x,x,x},
-			{x,x,x,x,x,x,x,x,b,b,b}}};
+			{x,x,x,x,b,b,x,x,b,b,b}}};

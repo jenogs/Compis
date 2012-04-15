@@ -93,7 +93,7 @@ typedef union YYSTYPE
 {
 
 /* Line 1676 of yacc.c  */
-#line 34 "SimpleFlow.y"
+#line 41 "SimpleFlow.y"
 
 	char ch;
 	char *string;

@@ -21,12 +21,20 @@ char scope;
 char flagTipo; //Bandera usada para revision del tipo en la asignación
 int tipoAux; //Auxiliar para el tipo de variable en la asignación
 int cParam = 0;
+int numVarInt = 0;
+int numVarFloat = 0;
+int numVarChar = 0;
+int numVarStr = 0;
+int numVarBool = 0;
 int aux = 0;
 int op; //operador
 int auxif;
+int k = 0;
 
 void generacionDeCuadruplos(int oper);
 void asignaTipoAux(char tipo);
+void sumaVar(char tipo);
+void reiniciaContVars();
 char * subString(char* str, int start, int length);
 
 %}
@@ -110,14 +118,20 @@ estatuto: asignacion
 
 /*****ESTATUTO-FUNCION*****/
 
-funcion: NOMBRE PARA funcion2 PARC PC { printf("Funcion\n"); }
+funcion: NOMBRE { if(buscaProc($1) != -1) {
+			printf("Función existente\n");
+		 } else {
+			printf("Error: Funcion no existente\n");
+		}} PARA { k++; } funcion2 PARC PC { printf("Funcion\n"); }
 	;
 
-funcion2: ID funcion3
+funcion2: exp { if(cimaPTipos == tipoParametro(k)) {
+			generaCuadruploParametro(popPilaO(), popPTipos());
+		}} funcion3
 	;
 
 funcion3: /* empty */
-	| COMA funcion2
+	| COMA { k++; } funcion2
 	;
 
 /*****Condición*****/
@@ -132,7 +146,7 @@ condicion: IF PARA expresion PARC { auxif = popPTipos();
 	bloque condicion2 { printf("Condicion Completa\n"); }
 	;
 
-condicion2: ELSE { generaGoTo(); rellenaGoToF(popPSaltos(), apunta_cuadruplo); pushPSaltos(apunta_cuadruplo-1); } bloque { printf("apuntador = %i\n",apunta_cuadruplo);rellenaGoTo(popPSaltos(), apunta_cuadruplo); }
+condicion2: ELSE { generaGoTo(); rellenaGoToF(popPSaltos(), apunta_cuadruplo); pushPSaltos(apunta_cuadruplo-1); } bloque { rellenaGoTo(popPSaltos(), apunta_cuadruplo); }
 	| condicion3
 	;
 
@@ -152,6 +166,7 @@ asignacion: tipo ID EQ asigna2 PC { pushPOper(300); asignaTipoAux(tipo);
 					}
 				    } else {
 					insertaVar(tipo, $2);
+					sumaVar(tipo);
 					printf("Asignacion Completa en tabla de Variables Locales\n");
 					if(cubo[cimaPTipos()][tipoAux][8] != 'x') {
 						generaCuadruplo(popPOper(), popPilaO(), -1, buscaVar($2, 'l'));
@@ -188,12 +203,17 @@ escritura2: exp { generaCuadruploPrint(popPilaO()); } COMA escritura2
 
 /*****LECTURA*****/
 
-lectura: READ PARA ID PARC PC { printf("Lectura completa\n"); }
+lectura: READ PARA ID PARC PC { generaCuadruploRead(popPilaO()); printf("Lectura completa\n"); }
 	;
 
 /*****CICLO*****/
 
-ciclo: REPEAT varcte bloque {printf("Ciclo completo\n"); }
+ciclo: REPEAT varcte { if(popPTipos() == 0) {
+				pushPSaltos(apunta_cuadruplo);
+				generaGoToF(popPilaO());
+			} else {
+				printf("Error: Tipo incompatible en el repeat.");
+			} } LLA bloque2 LLC { rellenaGoToF(popPSaltos(), apunta_cuadruplo); printf("Ciclo completo\n"); }
 	;
 
 /*****EXPRESION*****/
@@ -203,16 +223,16 @@ expresion: expresion2 operadorl { printf("Termina expresion\n"); }
 
 expresion2: exp MAY { pushPOper(202); } exp { if(cimaPOper() == 202) {
 		  				generacionDeCuadruplos(6);
-					      }} 
+					      } pushPTipos(4); } 
 	| exp MEN { pushPOper(203); } exp { if(cimaPOper() == 203) {
 		  				generacionDeCuadruplos(7);
-					      }} 
+					      } pushPTipos(4); } 
 	| exp DIF { pushPOper(204); } exp { if(cimaPOper() == 204) {
 		  				generacionDeCuadruplos(10);
-					      }} 
+					      } pushPTipos(4); } 
 	| exp IGU { pushPOper(205); } exp { if(cimaPOper() == 205) {
 		  				generacionDeCuadruplos(9);
-					      }} 
+					      } pushPTipos(4); } 
 	| PARA expresion2 PARC
 	;
 
@@ -269,7 +289,7 @@ factor: PARA exp PARC
 
 /*****VARIABLES CONSTANTES*****/
 
-varcte: ID { op = buscaVar($1, scope); pushPilaO(op); }
+varcte: ID { op = buscaVar($1, scope); asignaTipoAux(buscaVarTipo($1, scope)); pushPTipos(tipoAux); pushPilaO(op); }
 	| CTEE { agregaCte('i', $1, aux); op = buscaCteInt($1); pushPilaO(op); pushPTipos(0); }
 	| CTEF { agregaCte('f', $1, aux); op = buscaCteFloat($1); pushPilaO(op); pushPTipos(1); } 
 	| STRING { agregaCte('s', subString($1, 1, strlen($1)), 0); op = buscaCteChar($1); pushPilaO(op); pushPTipos(3); }
@@ -279,7 +299,7 @@ varcte: ID { op = buscaVar($1, scope); pushPilaO(op); }
 
 /****FUNCIÓN****/
 
-function: tipo FUNCTION NOMBRE { scope = 'l';
+function: tipo FUNCTION NOMBRE { scope = 'l'; insertaNumCuadruplo(apunta_cuadruplo);
 				if(buscaProc($3) == -1) {
 					insertaProc(tipo, $3);
 					printf("Inserto Procedimiento a directorio.\n");
@@ -287,7 +307,7 @@ function: tipo FUNCTION NOMBRE { scope = 'l';
 					printf("Error: Procedimiento existente.\n");
 				 }
 				}
-	PARA function2 PARC { cParam = 0; } BEGINF LLA bloque2 RETURN PARA exp PARC PC LLC ENDF { reiniciaTablaVar(); generaRetorno(); }
+	PARA function2 PARC { insertaNumParams(cParam); cParam = 0; } BEGINF LLA bloque2 RETURN PARA exp PARC PC LLC ENDF { insertaNumVars(numVarInt, numVarFloat, numVarChar, numVarStr, numVarBool); reiniciaContVars(); reiniciaTablaVar(); generaRetorno(); }
 	;
 
 function2: tipo ID { insertaParam(tipo, cParam); cParam++; insertaVar(tipo, $2); printf("Inserto Parametro.\n");} function3
@@ -390,9 +410,29 @@ void asignaTipoAux(char tipo) {
 		tipoAux = 3;
 	} else if(tipo == 'b') {
 		tipoAux = 4;
-	} else {
-		printf("Error: Tipo no aplicable\n");
 	}
+}
+
+void sumaVar(char tipo) {
+	if(tipo == 'i') {
+		numVarInt++;
+	} else if(tipo == 'f') {
+		numVarFloat++;
+	} else if(tipo == 'c') {
+		numVarChar++;
+	} else if(tipo == 's') {
+		numVarStr++;
+	} else if(tipo == 'b') {
+		numVarBool++;
+	}
+}
+
+void reiniciaContVars() {
+	numVarInt = 0;
+	numVarFloat = 0;
+	numVarChar = 0;
+	numVarStr = 0;
+	numVarBool = 0;
 }
 
 char * subString(char* str, int start, int length) {

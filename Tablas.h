@@ -92,6 +92,13 @@ typedef struct tabProcs{
 	struct tabProcs *sig;
 	char tipo;
 	char *id;
+	int numParams;
+	int numVarsInt;
+	int numVarsFloat;
+	int numVarsChar;
+	int numVarsStr;
+	int numVarsBool;
+	int numCuadruplo;
 	char parametro[50];
 } *procs;
 
@@ -256,6 +263,33 @@ int buscaVar(char *id, char scope) {
 	}
 }
 
+char buscaVarTipo(char *id, char scope) {
+	hv = hash(id);
+	vars v =  hashVars[hv];
+	vars vl =  hashVarsLocal[hv];
+	if(scope == 'g') {
+		while ((v != NULL) && (strcmp(id,v->id) != 0))
+			v = v->sig;
+		if (v == NULL)
+			return -1;
+		else
+			return v->tipo;
+	} else if(scope == 'l') {
+		while ((vl != NULL) && (strcmp(id,vl->id) != 0))
+			vl = v->sig;
+		if (vl == NULL) {
+			while ((v != NULL) && (strcmp(id,v->id) != 0))
+				v = v->sig;
+			if (v == NULL)
+				return -1;
+			else
+				return v->tipo;
+		} else {
+			return vl->tipo;
+		}
+	}
+}
+
 // Imprime tabla de variables 
 void imprimeVar(FILE *listing) {
 	int i;
@@ -314,6 +348,31 @@ int buscaProc(char *id) {
 		return hp;
 }
 
+void insertaNumParams(int num){
+	procs p = hashProcs[hp];
+	p = (procs)malloc(sizeof(struct tabProcs));
+	p->numParams = num;	
+	hashProcs[hp] = p;
+}
+
+void insertaNumVars(int varInt, int varFloat, int varChar, int varStr, int varBool) {
+	procs p = hashProcs[hp];
+	p = (procs)malloc(sizeof(struct tabProcs));
+	p->numVarsInt = varInt;
+	p->numVarsFloat = varFloat;
+	p->numVarsChar = varChar;
+	p->numVarsStr = varStr;
+	p->numVarsBool = varBool;
+	hashProcs[hp] = p;
+}
+
+void insertaNumCuadruplo(int apuntador) {
+	procs p = hashProcs[hp];
+	p = (procs)malloc(sizeof(struct tabProcs));
+	p->numCuadruplo = apuntador;	
+	hashProcs[hp] = p;	
+}
+
 // Imprime directorio de procedimientos 
 void imprimeProc(FILE *listing){
 	int i;
@@ -338,6 +397,10 @@ void insertaParam(char tipo, int cParam) {
 	p = (procs)malloc(sizeof(struct tabProcs));
 	p->parametro[cParam] = tipo;	
 	hashProcs[hp] = p;
+}
+
+int tipoParametro(int indice) {
+	
 }
 
 /* Funciones de Tablas de Constantes */
