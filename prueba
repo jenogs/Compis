@@ -23,7 +23,7 @@ begin {
 		}
 	}
 
-	FUNC(temp,temp2);
+	SUM(temp,temp2);
 
 	repeat 8 {
 		read(temp2);	

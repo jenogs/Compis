@@ -20,8 +20,11 @@ int apunta_cuadruplo = 0;
 401 = GoToF
 405 = Print
 406 = Read
-410 = Return
+410 = RET
+415 = return
 450 = Parametro
+500 = ERA
+550 = GOSUB
 ===============*/
 
 /* Estructura de un cuádruplo */
@@ -59,19 +62,35 @@ void generaCuadruploRead(int resultado) {
 	apunta_cuadruplo++;
 }
 
-void generaCuadruploParametro(int argumento, int parametroK) {
-	cuad[apunta_cuadruplo].operador = 450;
-	cuad[apunta_cuadruplo].operando1 = argumento;
-	cuad[apunta_cuadruplo].operando2 = -1;
-	cuad[apunta_cuadruplo].resultado = parametroK;
-	apunta_cuadruplo++;
-}
-
 void generaRetorno(){
 	cuad[apunta_cuadruplo].operador = 410;
 	cuad[apunta_cuadruplo].operando1 = -1;
 	cuad[apunta_cuadruplo].operando2 = -1;
 	cuad[apunta_cuadruplo].resultado = -1;
+	apunta_cuadruplo++;
+}
+
+void generaCuadruploReturn(int valor, int tipo){
+	cuad[apunta_cuadruplo].operador = 415;
+	cuad[apunta_cuadruplo].operando1 = valor;
+	cuad[apunta_cuadruplo].operando2 = -1;
+	switch(tipo) {
+		case 0:
+			cuad[apunta_cuadruplo].resultado = enteros_temporales+apunta_enteros_temporales-1;
+			break;
+		case 1:
+			cuad[apunta_cuadruplo].resultado = flotantes_temporales+apunta_flotantes_temporales-1;
+			break;
+		case 2:
+			cuad[apunta_cuadruplo].resultado = chars_temporales + apunta_chars_temporales-1;
+			break;
+		case 3:
+			cuad[apunta_cuadruplo].resultado = strings_temporales + apunta_strings_temporales-1;
+			break;
+		case 4:
+			cuad[apunta_cuadruplo].resultado = booleanos_temporales+ apunta_booleanos_temporales-1;
+			break;
+	}
 	apunta_cuadruplo++;
 }
 
@@ -86,6 +105,30 @@ void generaGoToF(int operando1) {
 	cuad[apunta_cuadruplo].operador = 401;
 	cuad[apunta_cuadruplo].operando1 = operando1;
 	cuad[apunta_cuadruplo].operando2 = -1;
+	apunta_cuadruplo++;
+}
+
+void generaCuadruploParametro(int argumento, int parametroK) {
+	cuad[apunta_cuadruplo].operador = 450;
+	cuad[apunta_cuadruplo].operando1 = argumento;
+	cuad[apunta_cuadruplo].operando2 = -1;
+	cuad[apunta_cuadruplo].resultado = parametroK;
+	apunta_cuadruplo++;
+}
+
+void generaCuadruploERA(int direccion) {
+	cuad[apunta_cuadruplo].operador = 500;
+	cuad[apunta_cuadruplo].operando1 = direccion;
+	cuad[apunta_cuadruplo].operando2 = -1;
+	cuad[apunta_cuadruplo].resultado = -1;
+	apunta_cuadruplo++;
+}
+
+void generaGoSub(int direccion) {
+	cuad[apunta_cuadruplo].operador = 550;
+	cuad[apunta_cuadruplo].operando1 = direccion;
+	cuad[apunta_cuadruplo].operando2 = -1;
+	cuad[apunta_cuadruplo].resultado = -1;
 	apunta_cuadruplo++;
 }
 

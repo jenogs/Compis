@@ -39,7 +39,7 @@ enum memoria {
      flotantes_const =      16000,
      chars_const =          17000,
      strings_const =        18000,
-     booleanos_const =      19000   
+     booleanos_const =      19000
 };
 
 /* Apuntadores de las direcciones virtuales de las variables */
@@ -400,7 +400,11 @@ void insertaParam(char tipo, int cParam) {
 }
 
 int tipoParametro(int indice) {
-	
+	char t;
+	procs p = hashProcs[hp];
+	p = (procs)malloc(sizeof(struct tabProcs));
+	t = p->parametro[indice];	
+	return t;
 }
 
 /* Funciones de Tablas de Constantes */

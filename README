@@ -10,6 +10,8 @@ Pilas.h
 
 --A Reparar--
 
+cuando no hay parametros de entrada***????
+
 0. Errores que marca dentro del archivo prueba al probar el programa // Por ahora no hay
 
 1. Hay que reiniciar la tabla de variables locales cada vez que sale de una función // YA QUEDO
@@ -23,6 +25,8 @@ Pilas.h
 	ciclo //No se si ya está
 	lectura -> no entiendo qué hace este pedo //Ya? xD
 	funcion
+
+Hacer cuadruplo del return en la funcion
 
 5. en Cuadruplos.h 
 	1. void generaRetorno() hay que revisar el retorno -> RET (Retorno)
