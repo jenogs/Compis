@@ -30,6 +30,9 @@ int aux = 0;
 int op; //operador
 int auxif;
 int k = 0;
+int numret = 0;
+char tipoFunc;
+char idProc[100];
 
 void generacionDeCuadruplos(int oper);
 void asignaTipoAux(char tipo);
@@ -81,7 +84,7 @@ asignaglobal2: /* empty */
 	| otraasignaciong asignaglobal2
 	;
 
-asignaciong: tipo ID EQ asigna2 PC { pushPOper(300); asignaTipoAux(tipo);
+asignaciong: tipo ID EQ exp PC { pushPOper(300); asignaTipoAux(tipo);
 				    if(buscaVar($2, 'g') != -1){
 						printf("Error: Variable global existente: %s\n", $2);
 				    } else {
@@ -97,7 +100,7 @@ asignaciong: tipo ID EQ asigna2 PC { pushPOper(300); asignaTipoAux(tipo);
 				}
 	;
 
-otraasignaciong: ID EQ asigna2 PC { pushPOper(300); asignaTipoAux(buscaVarTipo($1, 'g'));
+otraasignaciong: ID EQ exp PC { pushPOper(300); asignaTipoAux(buscaVarTipo($1, 'g'));
 				    if(buscaVar($1, 'g') != -1){
 					if(cubo[cimaPTipos()][tipoAux][8] != 'x') {
 						generaCuadruplo(popPOper(), popPilaO(), -1, buscaVar($1, 'g'));
@@ -133,20 +136,22 @@ estatuto: condicion
 
 /*****ESTATUTO-FUNCION*****/
 
-funcion: NOMBRE { if(buscaProc($1) == -1) {
+funcion: NOMBRE PARA { if(buscaProc($1) == -1) {
 			printf("Error: Procedimiento no existente.\n");
 		 } else {
 			generaCuadruploERA(buscaProc($1));
-		 }} PARA { k++; } funcion2 PARC PC { if(tipoParametro(k-1) == '\0') {
+			strcpy(idProc, $1);
+			k=k+1;
+		 }} funcion2 PARC PC { if(tipoParametro(k-1, idProc) == '\0') {
 							generaGoSub(buscaProc($1));
 							k = 0;
 						} printf("Funcion\n"); }
 	;
 
 funcion2: /* empty */
-	| exp { if(popPTipos() == tipoParametro(k-1)) {
-			generaCuadruploParametro(popPilaO(), k);
-		}} funcion3
+	| exp { printf("tipoP=%i cimaptipos=%i\n", tipoParametro(k-1, idProc), cimaPTipos());if(popPTipos() == tipoParametro(k-1, idProc)) {
+			generaCuadruploParametro(popPilaO(), k); printf("entra param\n");
+		}else{printf("tipo incompatible de param\n");}} funcion3
 	;
 
 funcion3: /* empty */
@@ -173,13 +178,14 @@ condicion3: { rellenaGoToF(popPSaltos(), apunta_cuadruplo); }
 	;
 
 ret: /* empty */
-	| RETURN PARA exp PARC PC { asignaTipoAux(tipo); generaCuadruploReturn(popPilaO(), tipoAux); 
-					if(popPTipos() != tipoAux) printf("Error: Tipo de valor de salida incompatible con el del metodo"); }
+	| RETURN PARA exp PARC PC { numret++; asignaTipoAux(tipoFunc); generaCuadruploReturn(popPilaO(), tipoAux); 
+					if(popPTipos() != tipoAux)
+						printf("Error: Tipo de valor de salida incompatible con el del metodo\n"); }
 	;
 
 /*****ASIGNACION LOCAL*****/
 
-asignacion: tipo ID EQ asigna2 PC { pushPOper(300); asignaTipoAux(tipo);
+asignacion: tipo ID EQ asigna2 { pushPOper(300); asignaTipoAux(tipo);
 				    if(buscaVar($2, 'l') != -1){
 					printf("Error: Variable global existente: %s\n", $2);
 				    } else {
@@ -196,11 +202,11 @@ asignacion: tipo ID EQ asigna2 PC { pushPOper(300); asignaTipoAux(tipo);
 				}
 	;
 
-asigna2: exp
-	| funcion 
+asigna2: exp PC
+	| funcion
 	;
 
-otraasignacion: ID EQ asigna2 PC { pushPOper(300); asignaTipoAux(buscaVarTipo($1, 'l'));
+otraasignacion: ID EQ asigna2 { pushPOper(300); asignaTipoAux(buscaVarTipo($1, 'l'));
 				    if(buscaVar($1, 'l') != -1){
 					if(cubo[cimaPTipos()][tipoAux][8] != 'x') {
 						generaCuadruplo(popPOper(), popPilaO(), -1, buscaVar($1, 'l'));
@@ -326,7 +332,7 @@ varcte: ID { op = buscaVar($1, scope); asignaTipoAux(buscaVarTipo($1, scope)); p
 
 /****FUNCIÓN****/
 
-function: tipo FUNCTION NOMBRE { scope = 'l'; insertaNumCuadruplo(apunta_cuadruplo); reiniciaContTemp();
+function: tipo FUNCTION NOMBRE { scope = 'l'; tipoFunc = tipo; insertaNumCuadruplo(apunta_cuadruplo); reiniciaContTemp(); numret = 0;
 				if(buscaProc($3) == -1) {
 					insertaProc(tipo, $3);
 					printf("Inserto Procedimiento a directorio.\n");
@@ -334,7 +340,7 @@ function: tipo FUNCTION NOMBRE { scope = 'l'; insertaNumCuadruplo(apunta_cuadrup
 					printf("Error: Procedimiento existente.\n");
 				 }
 				}
-	PARA function2 PARC { insertaNumParams(cParam); cParam = 0; } BEGINF LLA bloque2 ret LLC ENDF { insertaNumVars(numVarInt, numVarFloat, numVarChar, numVarStr, numVarBool); reiniciaContTemp(); reiniciaContVars(); reiniciaTablaVar(); generaRetorno(); }
+	PARA function2 PARC { insertaNumParams(cParam); cParam = 0; } BEGINF LLA bloque2 ret LLC ENDF { insertaNumVars(numVarInt, numVarFloat, numVarChar, numVarStr, numVarBool); reiniciaContTemp(); reiniciaContVars(); reiniciaTablaVar(); generaRetorno(); if(numret == 0) printf("Error: Función no tiene valor de regreso (return).\n"); }
 	;
 
 function2: /* empty */

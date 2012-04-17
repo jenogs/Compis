@@ -9,27 +9,16 @@ Cubo.h
 Pilas.h
 
 --A Reparar--
+en "asigna2" hay que comparar el tipo de la función llamada con el tipo de variable a asignar.
 
-cuando no hay parametros de entrada***????
-
-0. Errores que marca dentro del archivo prueba al probar el programa // Por ahora no hay
-
-1. Hay que reiniciar la tabla de variables locales cada vez que sale de una función // YA QUEDO
-
-2. El GoTo del main esta recibiendo otra dirección que no es la del main // SE ARREGLO SOLO WTF? hahaha
-
-3. Hay que checar funciones
-	Que el valor del return tenga el mismo tipo que la funcion
+0. Errores que marca dentro del archivo prueba al probar el programa // ??
 
 4. Faltan cuadruplos de:
-	ciclo //No se si ya está
 	lectura -> no entiendo qué hace este pedo //Ya? xD
 	funcion
 
-Hacer cuadruplo del return en la funcion
-
 5. en Cuadruplos.h 
 	1. void generaRetorno() hay que revisar el retorno -> RET (Retorno)
-	2. Falta ERA para funciones
+	2. Falta ERA para funciones --> FALTA
 	3. Falta GOSUB
 	

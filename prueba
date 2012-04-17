@@ -4,13 +4,18 @@ global float pi = 3.14 + 0.0016;
 global char b = 's';
 global string cosa = "hola";
 
-int function SUMA (int a, float b) beginf {
+float function SUMA (int a, float b) beginf {
 	float c = a + b;
 	return(c);
 } endf
 
-begin {
+float function MULTIPLICACION (float a, float b) beginf {
+	float c = a * b;
+	return(c);
+} endf
 
+begin {
+	float num = 4.5/0.5;
 	int temp = 5 + 2;
 	int temp2 = 3;
 
@@ -23,7 +28,7 @@ begin {
 		}
 	}
 
-	SUM(temp,temp2);
+	num = SUMA(temp, num);
 
 	repeat 8 {
 		read(temp2);	

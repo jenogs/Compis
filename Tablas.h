@@ -328,6 +328,8 @@ void insertaProc(char tipo, char *id){
 
 	p->sig = hashProcs[hp];
 	hashProcs[hp] = p;
+	printf("id=%s\n",p->id);
+	printf("tipo=%c\n",p->tipo);
 
 	apunta_enteros_locales = 0;
 	apunta_flotantes_locales = 0;
@@ -340,18 +342,33 @@ void insertaProc(char tipo, char *id){
 int buscaProc(char *id) {
 	hp = hash(id);
 	procs p =  hashProcs[hp];
+	if (p == NULL) {
+		printf("proc no encontrado\n");
+		return -1;
+	}else{
+		printf("proc encontrado\n");
+		return hp;
+	}
+}
+
+char buscaTipoProc(char *id) {
+	hp = hash(id);
+	procs p =  hashProcs[hp];
 	while ((p != NULL) && (strcmp(id,p->id) != 0))
 		p = p->sig;
 	if (p == NULL)
 		return -1;
 	else
-		return hp;
+		return p->tipo;	
 }
 
 void insertaNumParams(int num){
 	procs p = hashProcs[hp];
 	p = (procs)malloc(sizeof(struct tabProcs));
-	p->numParams = num;	
+	p->numParams = num;
+	printf("idnumParams=%s\n",p->id);
+	printf("tipo=%c\n",p->tipo);
+	p->sig = hashProcs[hp];
 	hashProcs[hp] = p;
 }
 
@@ -363,6 +380,9 @@ void insertaNumVars(int varInt, int varFloat, int varChar, int varStr, int varBo
 	p->numVarsChar = varChar;
 	p->numVarsStr = varStr;
 	p->numVarsBool = varBool;
+	printf("idnumVars=%s\n",p->id);
+	printf("tipo=%c\n",p->tipo);
+	p->sig = hashProcs[hp];
 	hashProcs[hp] = p;
 }
 
@@ -370,6 +390,7 @@ void insertaNumCuadruplo(int apuntador) {
 	procs p = hashProcs[hp];
 	p = (procs)malloc(sizeof(struct tabProcs));
 	p->numCuadruplo = apuntador;	
+	p->sig = hashProcs[hp];
 	hashProcs[hp] = p;	
 }
 
@@ -395,16 +416,34 @@ void imprimeProc(FILE *listing){
 void insertaParam(char tipo, int cParam) {
 	procs p = hashProcs[hp];
 	p = (procs)malloc(sizeof(struct tabProcs));
-	p->parametro[cParam] = tipo;	
+	p->parametro[cParam] = tipo;
+	printf("id=%s\n",p->id);
+	printf("tipo=%c\n",p->tipo);
+	p->sig = hashProcs[hp];
 	hashProcs[hp] = p;
 }
 
-int tipoParametro(int indice) {
-	char t;
+int tipoParametro(int indice, char *id) {
+	hp = hash(id);
 	procs p = hashProcs[hp];
-	p = (procs)malloc(sizeof(struct tabProcs));
-	t = p->parametro[indice];	
-	return t;
+	printf("proc=%i\n",hp);
+	printf("param=%c\n",p->parametro[0]);
+	if (p == NULL) {
+		printf("proc no encontrado\n");
+		return -1;
+	}else{
+		printf("proc encontrado\n");
+		if(p->parametro[indice] == 'i')
+		return 0;
+	else if(p->parametro[indice] == 'f')
+		return 1;
+	else if(p->parametro[indice] == 'c')
+		return 2;
+	else if(p->parametro[indice] == 's')
+		return 3;
+	else if(p->parametro[indice] == 'b')
+		return 4;
+	}
 }
 
 /* Funciones de Tablas de Constantes */
