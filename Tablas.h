@@ -317,8 +317,8 @@ void reiniciaTablaVar() {
 
 /* Funciones de Directorio de Procedimientos */
 
-// Insertar Procedimiento
-void insertaProc(char tipo, char *id){
+// Inserta programa como proc
+void insertaProcIni(char tipo, char *id) {
 	hp = hash(id);
 	procs p =  hashProcs[hp];
 
@@ -328,8 +328,27 @@ void insertaProc(char tipo, char *id){
 
 	p->sig = hashProcs[hp];
 	hashProcs[hp] = p;
-	printf("id=%s\n",p->id);
-	printf("tipo=%c\n",p->tipo);
+}
+
+// Insertar Procedimiento
+void insertaProc(char tipo, char *id, int varInt, int varFloat, int varChar, int varStr, int varBool, int num, int apuntador, char parametros[]){
+	int i;
+	hp = hash(id);
+	procs p =  hashProcs[hp];
+
+	p = (procs)malloc(sizeof(struct tabProcs));
+	p->tipo = tipo;
+	p->id = id;
+
+	p->numParams = num;
+	p->numCuadruplo = apuntador;
+
+	for(i = 0; i < num; i++){
+		p->parametro[i] = parametros[i];
+	}
+
+	p->sig = hashProcs[hp];
+	hashProcs[hp] = p;
 
 	apunta_enteros_locales = 0;
 	apunta_flotantes_locales = 0;
@@ -342,13 +361,10 @@ void insertaProc(char tipo, char *id){
 int buscaProc(char *id) {
 	hp = hash(id);
 	procs p =  hashProcs[hp];
-	if (p == NULL) {
-		printf("proc no encontrado\n");
+	if (p == NULL) 
 		return -1;
-	}else{
-		printf("proc encontrado\n");
+	else
 		return hp;
-	}
 }
 
 char buscaTipoProc(char *id) {
@@ -360,38 +376,6 @@ char buscaTipoProc(char *id) {
 		return -1;
 	else
 		return p->tipo;	
-}
-
-void insertaNumParams(int num){
-	procs p = hashProcs[hp];
-	p = (procs)malloc(sizeof(struct tabProcs));
-	p->numParams = num;
-	printf("idnumParams=%s\n",p->id);
-	printf("tipo=%c\n",p->tipo);
-	p->sig = hashProcs[hp];
-	hashProcs[hp] = p;
-}
-
-void insertaNumVars(int varInt, int varFloat, int varChar, int varStr, int varBool) {
-	procs p = hashProcs[hp];
-	p = (procs)malloc(sizeof(struct tabProcs));
-	p->numVarsInt = varInt;
-	p->numVarsFloat = varFloat;
-	p->numVarsChar = varChar;
-	p->numVarsStr = varStr;
-	p->numVarsBool = varBool;
-	printf("idnumVars=%s\n",p->id);
-	printf("tipo=%c\n",p->tipo);
-	p->sig = hashProcs[hp];
-	hashProcs[hp] = p;
-}
-
-void insertaNumCuadruplo(int apuntador) {
-	procs p = hashProcs[hp];
-	p = (procs)malloc(sizeof(struct tabProcs));
-	p->numCuadruplo = apuntador;	
-	p->sig = hashProcs[hp];
-	hashProcs[hp] = p;	
 }
 
 // Imprime directorio de procedimientos 
@@ -412,28 +396,9 @@ void imprimeProc(FILE *listing){
 	}
 }
 
-// Insertar parámetros a los procedimientos
-void insertaParam(char tipo, int cParam) {
+int tipoParametro(int indice) {
 	procs p = hashProcs[hp];
-	p = (procs)malloc(sizeof(struct tabProcs));
-	p->parametro[cParam] = tipo;
-	printf("id=%s\n",p->id);
-	printf("tipo=%c\n",p->tipo);
-	p->sig = hashProcs[hp];
-	hashProcs[hp] = p;
-}
-
-int tipoParametro(int indice, char *id) {
-	hp = hash(id);
-	procs p = hashProcs[hp];
-	printf("proc=%i\n",hp);
-	printf("param=%c\n",p->parametro[0]);
-	if (p == NULL) {
-		printf("proc no encontrado\n");
-		return -1;
-	}else{
-		printf("proc encontrado\n");
-		if(p->parametro[indice] == 'i')
+	if(p->parametro[indice] == 'i')
 		return 0;
 	else if(p->parametro[indice] == 'f')
 		return 1;
@@ -443,7 +408,6 @@ int tipoParametro(int indice, char *id) {
 		return 3;
 	else if(p->parametro[indice] == 'b')
 		return 4;
-	}
 }
 
 /* Funciones de Tablas de Constantes */

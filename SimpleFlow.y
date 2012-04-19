@@ -18,6 +18,7 @@ void yyerror(const char *s);
 
 char tipo;
 char scope;
+char paramAux[50];
 char flagTipo; //Bandera usada para revision del tipo en la asignación
 int tipoAux; //Auxiliar para el tipo de variable en la asignación
 int cParam = 0;
@@ -31,8 +32,8 @@ int op; //operador
 int auxif;
 int k = 0;
 int numret = 0;
+int numCuadFunc;
 char tipoFunc;
-char idProc[100];
 
 void generacionDeCuadruplos(int oper);
 void asignaTipoAux(char tipo);
@@ -40,6 +41,8 @@ void sumaVar(char tipo);
 void reiniciaContVars();
 void reiniciaContTemp();
 char * subString(char* str, int start, int length);
+void insertaParam(char tipo, int cParam);
+int asignaTemp(char tipo);
 
 %}
 
@@ -66,12 +69,11 @@ char * subString(char* str, int start, int length);
 
 %%
 
-programa: NOMBRE { insertaProc('n', $1); scope = 'g'; generaGoTo(); pushPSaltos(apunta_cuadruplo-1); } asignaglobal programa2 BEGINP { scope = 'l'; rellenaGoTo(popPSaltos(), apunta_cuadruplo); } bloque ENDP { printf("Programa completo\n"); }
+programa: NOMBRE { insertaProcIni('n', $1); scope = 'g'; generaGoTo(); pushPSaltos(apunta_cuadruplo-1); } asignaglobal programa2 BEGINP { scope = 'l'; rellenaGoTo(popPSaltos(), apunta_cuadruplo); } bloque ENDP { generaEnd(); printf("Programa completo\n"); }
 	;
 
 programa2: /* empty */
-	| function programa2 { printf("Funcion\n"); }
-	;
+	| function programa2
 
 /*****ASIGNACION GLOBAL*****/
 
@@ -86,15 +88,14 @@ asignaglobal2: /* empty */
 
 asignaciong: tipo ID EQ exp PC { pushPOper(300); asignaTipoAux(tipo);
 				    if(buscaVar($2, 'g') != -1){
-						printf("Error: Variable global existente: %s\n", $2);
+						yyerror("Variable global existente.\n");
 				    } else {
 					insertaVarGlobal(tipo, $2);
-					printf("Asignacion Completa en tabla de Variables Globales\n");
 					if(cubo[cimaPTipos()][tipoAux][8] != 'x') {
 						generaCuadruplo(popPOper(), popPilaO(), -1, buscaVar($2, 'g'));
 						
 					} else {
-						printf("Error: Tipos no compatibles\n");
+						yyerror("Tipos no compatibles en la asignacion global.\n");
 					}
 				   }
 				}
@@ -106,13 +107,13 @@ otraasignaciong: ID EQ exp PC { pushPOper(300); asignaTipoAux(buscaVarTipo($1, '
 						generaCuadruplo(popPOper(), popPilaO(), -1, buscaVar($1, 'g'));
 					}
 				    } else {
-					printf("Error: Variable no existente: %s\n", $1);
+					yyerror("Variable no existente en la asignacion global\n");
 				} }
 	;
 
 /*****BLOQUES*****/
 
-bloque: LLA bloque2 LLC { printf("Bloque completo\n"); }
+bloque: LLA bloque2 LLC
 	;
 
 bloque2: /* empty */
@@ -121,7 +122,7 @@ bloque2: /* empty */
 	;
 
 bloque3: /* empty */
-	| estatuto bloque3 { printf("Bloque3 completo\n"); }
+	| estatuto bloque3
 	;
 
 /*****ESTATUTOS*****/
@@ -137,37 +138,58 @@ estatuto: condicion
 /*****ESTATUTO-FUNCION*****/
 
 funcion: NOMBRE PARA { if(buscaProc($1) == -1) {
-			printf("Error: Procedimiento no existente.\n");
+			yyerror("Procedimiento llamado no existente.\n");
 		 } else {
 			generaCuadruploERA(buscaProc($1));
-			strcpy(idProc, $1);
-			k=k+1;
-		 }} funcion2 PARC PC { if(tipoParametro(k-1, idProc) == '\0') {
-							generaGoSub(buscaProc($1));
-							k = 0;
-						} printf("Funcion\n"); }
+			k++;
+		 }} funcion2 PARC PC{
+			if((tipoParametro(k-1) != 0) || (tipoParametro(k-1) != 1) || (tipoParametro(k-1) != 2) || (tipoParametro(k-1) != 3) || (tipoParametro(k-1) != 4)) {
+				generaGoSub(buscaProc($1));
+				k = 0;
+				pushPilaO(asignaTemp(buscaVarTipo($1, 'g')));
+				generaCuadruplo(300, buscaVar($1, 'g'), -1, cimaPilaO());
+				pushPTipos(buscaVarTipo($1, 'g'));
+			} }
 	;
 
 funcion2: /* empty */
-	| exp { printf("tipoP=%i cimaptipos=%i\n", tipoParametro(k-1, idProc), cimaPTipos());if(popPTipos() == tipoParametro(k-1, idProc)) {
-			generaCuadruploParametro(popPilaO(), k); printf("entra param\n");
-		}else{printf("tipo incompatible de param\n");}} funcion3
+	| exp { if(popPTipos() == tipoParametro(k-1)) {
+			generaCuadruploParametro(popPilaO(), k);
+		} else {
+			yyerror("Tipo incompatible de parametro en la llamada de procedimiento.\n");
+		}} funcion3
 	;
 
 funcion3: /* empty */
 	| COMA { k++; } funcion2
 	;
 
+/*****EXP-FUNCION*****/
+funcionalt: NOMBRE PARA { pushPOper(350); if(buscaProc($1) == -1) {
+			yyerror("Procedimiento llamado no existente.\n");
+		 } else {
+			generaCuadruploERA(buscaProc($1));
+			k++;
+		 }} funcion2 PARC { popPOper();
+			if((tipoParametro(k-1) != 0) || (tipoParametro(k-1) != 1) || (tipoParametro(k-1) != 2) || (tipoParametro(k-1) != 3) || (tipoParametro(k-1) != 4)) {
+				generaGoSub(buscaProc($1));
+				k = 0;
+				pushPilaO(asignaTemp(buscaVarTipo($1, 'g')));
+				generaCuadruplo(300, buscaVar($1, 'g'), -1, cimaPilaO());
+				asignaTipoAux(buscaVarTipo($1,'g'));
+				pushPTipos(tipoAux);
+			} }
+	;
 /*****Condición*****/
 
 condicion: IF PARA expresion PARC { auxif = popPTipos();
 				if(auxif != 4) {
-					printf("Error: Error Semantico");
+					yyerror("Tipos no compatibles en la condicion\n");
 				} else {
 					generaGoToF(popPilaO());
 					pushPSaltos(apunta_cuadruplo-1);
 				}} 
-	LLA bloque3 ret LLC condicion2 { printf("Condicion Completa\n"); }
+	LLA bloque3 ret LLC condicion2
 	;
 
 condicion2: ELSE { generaGoTo(); rellenaGoToF(popPSaltos(), apunta_cuadruplo); pushPSaltos(apunta_cuadruplo-1); } LLA bloque3 ret LLC { rellenaGoTo(popPSaltos(), apunta_cuadruplo); }
@@ -178,32 +200,29 @@ condicion3: { rellenaGoToF(popPSaltos(), apunta_cuadruplo); }
 	;
 
 ret: /* empty */
-	| RETURN PARA exp PARC PC { numret++; asignaTipoAux(tipoFunc); generaCuadruploReturn(popPilaO(), tipoAux); 
+	| RETURN PARA exp PARC PC { numret++; asignaTipoAux(tipoFunc); generaCuadruploReturn(popPilaO(), tipoAux);
 					if(popPTipos() != tipoAux)
-						printf("Error: Tipo de valor de salida incompatible con el del metodo\n"); }
+						yyerror("Tipo de valor de salida incompatible con el del metodo\n"); }
 	;
 
 /*****ASIGNACION LOCAL*****/
 
 asignacion: tipo ID EQ asigna2 { pushPOper(300); asignaTipoAux(tipo);
 				    if(buscaVar($2, 'l') != -1){
-					printf("Error: Variable global existente: %s\n", $2);
+					yyerror("Variable local existente.\n");
 				    } else {
 					insertaVar(tipo, $2);
 					sumaVar(tipo);
-					printf("Asignacion Completa en tabla de Variables Locales\n");
 					if(cubo[cimaPTipos()][tipoAux][8] != 'x') {
 						generaCuadruplo(popPOper(), popPilaO(), -1, buscaVar($2, 'l'));
-						
 					} else {
-						printf("Error: Tipos no compatibles\n");
+						yyerror("Tipos no compatibles. en asignacion local\n");
 					}
 				   }
 				}
 	;
 
 asigna2: exp PC
-	| funcion
 	;
 
 otraasignacion: ID EQ asigna2 { pushPOper(300); asignaTipoAux(buscaVarTipo($1, 'l'));
@@ -212,7 +231,7 @@ otraasignacion: ID EQ asigna2 { pushPOper(300); asignaTipoAux(buscaVarTipo($1, '
 						generaCuadruplo(popPOper(), popPilaO(), -1, buscaVar($1, 'l'));
 					}
 				    } else {
-					printf("Error: Variable no existente: %s\n", $1);
+					yyerror("Variable local asignada no existente.\n");
 				}}
 	;
 
@@ -227,7 +246,7 @@ tipo:	INT { tipo = 'i'; }
 
 /*****ESCRITURA*****/
 
-escritura: PRINT PARA escritura2 PARC PC { printf("Escritura Completa\n"); }
+escritura: PRINT PARA escritura2 PARC PC
 	;
 
 escritura2: exp { generaCuadruploPrint(popPilaO()); } COMA escritura2
@@ -236,7 +255,7 @@ escritura2: exp { generaCuadruploPrint(popPilaO()); } COMA escritura2
 
 /*****LECTURA*****/
 
-lectura: READ PARA ID PARC PC { generaCuadruploRead(popPilaO()); printf("Lectura completa\n"); }
+lectura: READ PARA ID PARC PC { generaCuadruploRead(popPilaO()); }
 	;
 
 /*****CICLO*****/
@@ -245,13 +264,13 @@ ciclo: REPEAT varcte { if(popPTipos() == 0) {
 				pushPSaltos(apunta_cuadruplo);
 				generaGoToF(popPilaO());
 			} else {
-				printf("Error: Tipo incompatible en el repeat.");
-			} } LLA bloque3 LLC { rellenaGoToF(popPSaltos(), apunta_cuadruplo); printf("Ciclo completo\n"); }
+				yyerror("Tipo incompatible en el repeat.\n");
+			} } LLA bloque3 LLC { rellenaGoToF(popPSaltos(), apunta_cuadruplo); }
 	;
 
 /*****EXPRESION*****/
 
-expresion: expresion2 operadorl { printf("Termina expresion\n"); }
+expresion: expresion2 operadorl
 	;
 
 expresion2: exp MAY { pushPOper(202); } exp { if(cimaPOper() == 202) {
@@ -266,7 +285,7 @@ expresion2: exp MAY { pushPOper(202); } exp { if(cimaPOper() == 202) {
 	| exp IGU { pushPOper(205); } exp { if(cimaPOper() == 205) {
 		  				generacionDeCuadruplos(9);
 					      } pushPTipos(4); } 
-	| PARA expresion2 PARC
+	| PARA { pushPOper(350); } expresion2 PARC { popPOper(); }
 	;
 
 operadorl: /* empty */
@@ -314,7 +333,7 @@ termino11: /* empty */
 
 /***Factor positivo o negativo***/
 
-factor: PARA exp PARC
+factor: PARA { pushPOper(350); } exp PARC { popPOper(); }
 	| SUM { aux = 1; } varcte 
 	| RES { aux = -1; } varcte
 	| varcte
@@ -328,27 +347,40 @@ varcte: ID { op = buscaVar($1, scope); asignaTipoAux(buscaVarTipo($1, scope)); p
 	| STRING { agregaCte('s', subString($1, 1, strlen($1)), 0); op = buscaCteChar($1); pushPilaO(op); pushPTipos(3); }
 	| CH { agregaCte('c', subString($1, 1, strlen($1)), 0); op = buscaCteStr($1); pushPilaO(op); pushPTipos(2); }
 	| BOOLEAN { agregaCte('b', $1, 0); op = buscaCteBool($1); pushPilaO(op); pushPTipos(4); }
+	| funcionalt
 	;
 
 /****FUNCIÓN****/
 
-function: tipo FUNCTION NOMBRE { scope = 'l'; tipoFunc = tipo; insertaNumCuadruplo(apunta_cuadruplo); reiniciaContTemp(); numret = 0;
-				if(buscaProc($3) == -1) {
-					insertaProc(tipo, $3);
-					printf("Inserto Procedimiento a directorio.\n");
-				 } else {
-					printf("Error: Procedimiento existente.\n");
+function: tipo FUNCTION NOMBRE { scope = 'l'; tipoFunc = tipo; numCuadFunc = apunta_cuadruplo; reiniciaContTemp(); numret = 0;
+				if(buscaProc($3) != -1) {
+					yyerror("Procedimiento declarado existente.\n");
 				 }
-				}
-	PARA function2 PARC { insertaNumParams(cParam); cParam = 0; } BEGINF LLA bloque2 ret LLC ENDF { insertaNumVars(numVarInt, numVarFloat, numVarChar, numVarStr, numVarBool); reiniciaContTemp(); reiniciaContVars(); reiniciaTablaVar(); generaRetorno(); if(numret == 0) printf("Error: Función no tiene valor de regreso (return).\n"); }
+				} PARA function2 PARC BEGINF LLA asigna b2 { insertaProc(tipoFunc,$3,numVarInt,numVarFloat,numVarChar,numVarStr,numVarBool,cParam,numCuadFunc,paramAux); insertaVarGlobal(tipoFunc, $3); } bloque3 ret LLC ENDF {
+		reiniciaContTemp();
+		reiniciaContVars();
+		reiniciaTablaVar();
+		cParam = 0;
+		generaRetorno();
+		if(numret == 0)
+			yyerror("Función no tiene valor de regreso (return).\n");
+		}
 	;
 
 function2: /* empty */
-	| tipo ID { insertaParam(tipo, cParam); cParam++; insertaVar(tipo, $2); printf("Inserto Parametro.\n");} function3
+	| tipo ID { insertaParam(tipo, cParam); cParam++; insertaVar(tipo, $2); } function3
 	;
 
 function3: /* empty */
 	| COMA function2
+	;
+
+asigna: /* empty */
+	| asignacion
+	;
+
+b2: /* empty */
+	| asignacion b2
 	;
 
 %%
@@ -433,6 +465,33 @@ void generacionDeCuadruplos(int oper){
 	}
 }
 
+int asignaTemp(char tipo) {
+	int t;
+	switch(tipo) {
+		case 'i':
+			t = enteros_temporales + apunta_enteros_temporales;
+			apunta_enteros_temporales++;
+			break;
+		case 'f':
+			t = flotantes_temporales+apunta_flotantes_temporales;
+			apunta_flotantes_temporales++;
+			break;
+		case 'c':
+			t = chars_temporales + apunta_chars_temporales;
+			apunta_chars_temporales++;
+			break;
+		case 's':
+			t = strings_temporales + apunta_strings_temporales;
+			apunta_strings_temporales++;
+			break;
+		case 'b':
+			t = booleanos_temporales+ apunta_booleanos_temporales;
+			apunta_booleanos_temporales++;
+			break;
+	}
+	return t;
+}
+
 void asignaTipoAux(char tipo) {
 	if(tipo == 'i') {
 		tipoAux = 0;
@@ -487,6 +546,10 @@ char * subString(char* str, int start, int length) {
 	return newString;
 }
 
+void insertaParam(char tipo, int cParam) {
+	paramAux[cParam] = tipo;
+}
+
 /* Funcion Main */
 main() {
 	
@@ -508,6 +571,6 @@ main() {
 }
 
 void yyerror(const char *s) {
-	cout << "Error!  Mensaje: " << s << endl;
+	cout << "Error!  " << s << endl;
 	exit(-1);
 }

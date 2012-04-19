@@ -16,6 +16,8 @@ int apunta_cuadruplo = 0;
 205 = IGU
 300 = EQ
 
+350 = Fondo Falso
+
 400 = GoTo
 401 = GoToF
 405 = Print
@@ -25,6 +27,7 @@ int apunta_cuadruplo = 0;
 450 = Parametro
 500 = ERA
 550 = GOSUB
+777 = END
 ===============*/
 
 /* Estructura de un cuádruplo */
@@ -130,6 +133,14 @@ void generaGoSub(int direccion) {
 	cuad[apunta_cuadruplo].operando2 = -1;
 	cuad[apunta_cuadruplo].resultado = -1;
 	apunta_cuadruplo++;
+}
+
+void generaEnd(){ 
+	cuad[apunta_cuadruplo].operador = 777;
+	cuad[apunta_cuadruplo].operando1 = -1;
+	cuad[apunta_cuadruplo].operando2 = -1;
+	cuad[apunta_cuadruplo].resultado = -1;
+	apunta_cuadruplo++;	
 }
 
 void rellenaGoTo(int apuntador, int resultado){

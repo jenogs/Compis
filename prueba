@@ -1,38 +1,27 @@
 PROG
 
-global float pi = 3.14 + 0.0016;
-global char b = 's';
-global string cosa = "hola";
+global int i = 0;
+global int j = 0;
 
-float function SUMA (int a, float b) beginf {
-	float c = a + b;
-	return(c);
+int function UNO (int a) beginf {
+	i = a * 2;
+	if(i < a+4) {
+		UNO(a+1);
+	}
+	return(a);
 } endf
 
-float function MULTIPLICACION (float a, float b) beginf {
-	float c = a * b;
-	return(c);
+int function DOS (int b) beginf {
+	b = b*i+j;
+	return(b*2);
 } endf
 
 begin {
-	float num = 4.5/0.5;
-	int temp = 5 + 2;
-	int temp2 = 3;
+	i = 2;
+	j = i*2-1;
 
-	if ((temp > temp2) && (pi < temp)) {
-		print(temp + temp2, temp);
-                if (temp == 3) {
-			temp = 5;
-		} else {
-			temp2 = 2;
-		}
-	}
+	UNO(j);
 
-	num = SUMA(temp, num);
-
-	repeat 8 {
-		read(temp2);	
-	}
-
+	print(i + DOS(i+j));
 }
 end
