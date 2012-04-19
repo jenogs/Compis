@@ -290,16 +290,36 @@ char buscaVarTipo(char *id, char scope) {
 	}
 }
 
-// Imprime tabla de variables 
+// Imprime tabla de variables globales
 void imprimeVar(FILE *listing) {
 	int i;
-	fprintf(listing,"Nombre de Variable  Direccion\n");
-	fprintf(listing,"------------------  ---------\n");
+	fprintf(listing,"\n");
+	fprintf(listing,"Nombre de Variable Global  Direccion\n");
+	fprintf(listing,"-------------------------  ---------\n");
 	for (i=0;i<TAMANO_HASH;++i) {
 		if (hashVars[i] != NULL) {
 			vars v = hashVars[i];
 			while (v != NULL) {
-				fprintf(listing,"%-14s ",v->id);
+				fprintf(listing,"%-14s \t\t\t",v->id);
+				fprintf(listing,"%-8d  ",v->dirvar);
+				fprintf(listing,"\n");
+				v = v->sig;
+			}
+		}
+	}
+}
+
+// Imprime tabla de variables locales
+void imprimeVarLocal(FILE *listing) {
+	int i;
+	fprintf(listing,"\n");
+	fprintf(listing,"Nombre de Variable Local  Direccion\n");
+	fprintf(listing,"------------------------  ---------\n");
+	for (i=0;i<TAMANO_HASH;++i) {
+		if (hashVars[i] != NULL) {
+			vars v = hashVarsLocal[i];
+			while (v != NULL) {
+				fprintf(listing,"%-14s \t\t\t",v->id);
 				fprintf(listing,"%-8d  ",v->dirvar);
 				fprintf(listing,"\n");
 				v = v->sig;
@@ -381,18 +401,21 @@ char buscaTipoProc(char *id) {
 // Imprime directorio de procedimientos 
 void imprimeProc(FILE *listing){
 	int i;
+	int j = 0;
+	fprintf(listing,"\n");
 	fprintf(listing,"Nombre del Procedimiento  Direccion\n");
 	fprintf(listing,"------------------------  ---------\n");
 	for (i=0;i<TAMANO_HASH;++i) {
 		if (hashProcs[i] != NULL) {
 			procs p = hashProcs[i];
 			while (p != NULL) {
-				fprintf(listing,"%-14s ", p->id);
-				fprintf(listing,"%-8d  ", hp);
+				fprintf(listing,"%-14s \t\t\t", p->id);
+				fprintf(listing,"%-8d  ", p->parametro[j]);
 				fprintf(listing,"\n");
 				p = p->sig;
 			}
 		}
+		j++;
 	}
 }
 

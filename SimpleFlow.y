@@ -552,7 +552,6 @@ void insertaParam(char tipo, int cParam) {
 
 /* Funcion Main */
 main() {
-	
 	FILE *myfile = fopen("prueba", "r");
 	if (!myfile) {
 		printf("No se puede abrir el archivo!");
@@ -564,10 +563,7 @@ main() {
 		yyparse();
 	} while (!feof(yyin));
 
-	imprimeCuadruplos();
-
-	//imprimeVar(myfile);
-	//imprimeProc(myfile);
+	imprimeCuadruplos("obj");
 }
 
 void yyerror(const char *s) {

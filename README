@@ -8,19 +8,6 @@ Cuadruplos.h
 Cubo.h
 Pilas.h
 
---A Reparar--
-en "asigna2" hay que comparar el tipo de la función llamada con el tipo de variable a asignar.
 
-0. Errores que marca dentro del archivo prueba al probar el programa // ??
+lectura -> no entiendo qué hace este pedo //Ya? xD
 
-4. Faltan cuadruplos de:
-	lectura -> no entiendo qué hace este pedo //Ya? xD
-	funcion
-
-5. en Cuadruplos.h 
-	1. void generaRetorno() hay que revisar el retorno -> RET (Retorno)
-	2. Falta ERA para funciones --> FALTA
-	3. Falta GOSUB
-	
-
-PONER FUNCION COMO VARIABLE???

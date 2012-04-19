@@ -151,9 +151,13 @@ void rellenaGoToF(int apuntador, int resultado){
 	cuad[apuntador].resultado = resultado;
 }
 
-void imprimeCuadruplos(){
+void imprimeCuadruplos(char *myfile){
 	int i;
+	FILE *obj;
+	obj = fopen(myfile,"w+");
 	for(i=0;i<apunta_cuadruplo;i++){
 		printf("%d: [%d, %d, %d, %d]\n",i, cuad[i].operador,cuad[i].operando1,cuad[i].operando2,cuad[i].resultado);
+		fprintf(obj, "%d,%d,%d,%d\n", cuad[i].operador,cuad[i].operando1,cuad[i].operando2,cuad[i].resultado);
 	}
+	fclose(obj);
 }
