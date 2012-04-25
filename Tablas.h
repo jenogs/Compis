@@ -100,6 +100,7 @@ typedef struct tabProcs{
 	int numVarsBool;
 	int numCuadruplo;
 	char parametro[50];
+	int valorRetorno;
 } *procs;
 
 // Estructuras de Constantes
@@ -300,8 +301,8 @@ void imprimeVar(FILE *listing) {
 		if (hashVars[i] != NULL) {
 			vars v = hashVars[i];
 			while (v != NULL) {
-				fprintf(listing,"%-14s \t\t\t",v->id);
-				fprintf(listing,"%-8d  ",v->dirvar);
+				fprintf(listing,"%s \t\t\t",v->id);
+				fprintf(listing,"%d",v->dirvar);
 				fprintf(listing,"\n");
 				v = v->sig;
 			}
@@ -319,8 +320,8 @@ void imprimeVarLocal(FILE *listing) {
 		if (hashVars[i] != NULL) {
 			vars v = hashVarsLocal[i];
 			while (v != NULL) {
-				fprintf(listing,"%-14s \t\t\t",v->id);
-				fprintf(listing,"%-8d  ",v->dirvar);
+				fprintf(listing,"%s \t\t\t",v->id);
+				fprintf(listing,"%d",v->dirvar);
 				fprintf(listing,"\n");
 				v = v->sig;
 			}
@@ -351,7 +352,7 @@ void insertaProcIni(char tipo, char *id) {
 }
 
 // Insertar Procedimiento
-void insertaProc(char tipo, char *id, int varInt, int varFloat, int varChar, int varStr, int varBool, int num, int apuntador, char parametros[]){
+void insertaProc(char tipo, char *id, int varInt, int varFloat, int varChar, int varStr, int varBool, int num, int apuntador, char parametros[], int valorRet){
 	int i;
 	hp = hash(id);
 	procs p =  hashProcs[hp];
@@ -366,6 +367,8 @@ void insertaProc(char tipo, char *id, int varInt, int varFloat, int varChar, int
 	for(i = 0; i < num; i++){
 		p->parametro[i] = parametros[i];
 	}
+	
+	p->valorRetorno = valorRet;
 
 	p->sig = hashProcs[hp];
 	hashProcs[hp] = p;
@@ -401,22 +404,18 @@ char buscaTipoProc(char *id) {
 // Imprime directorio de procedimientos 
 void imprimeProc(FILE *listing){
 	int i;
-	int j = 0;
-	fprintf(listing,"\n");
-	fprintf(listing,"Nombre del Procedimiento  Direccion\n");
-	fprintf(listing,"------------------------  ---------\n");
 	for (i=0;i<TAMANO_HASH;++i) {
 		if (hashProcs[i] != NULL) {
 			procs p = hashProcs[i];
 			while (p != NULL) {
-				fprintf(listing,"%-14s \t\t\t", p->id);
-				fprintf(listing,"%-8d  ", p->parametro[j]);
+				fprintf(listing,"%s#", p->id);
+				fprintf(listing,"%d", i);
 				fprintf(listing,"\n");
 				p = p->sig;
 			}
 		}
-		j++;
 	}
+	fprintf(listing,"$\n");
 }
 
 int tipoParametro(int indice) {
@@ -442,9 +441,9 @@ int buscaCteInt(char *val){
 	while ((c != NULL) && (atoi(val) != c->val))
 		c = c->sig;
 	if (c == NULL)
-		return hc;
-	else
 		return -1;
+	else
+		return hc;
 }
 
 // Busca constante flotante
@@ -454,9 +453,9 @@ int buscaCteFloat(char *val){
 	while ((c != NULL) && (atof(val) != c->val))
 		c = c->sig;
 	if (c == NULL)
-		return hc;
-	else
 		return -1;
+	else
+		return hc;
 }
 
 // Busca constante char
@@ -466,9 +465,9 @@ int buscaCteChar(char *val){
 	while ((c != NULL) && (strcmp(val,c->val) != 0))
 		c = c->sig;
 	if (c == NULL)
-		return hc;
-	else
 		return -1;
+	else
+		return hc;
 }
 
 // Busca constante string
@@ -478,9 +477,9 @@ int buscaCteStr(char *val){
 	while ((c != NULL) && (strcmp(val,c->val) != 0))
 		c = c->sig;
 	if (c == NULL)
-		return hc;
-	else
 		return -1;
+	else
+		return hc;
 }
 
 // Busca constante booleana
@@ -490,9 +489,9 @@ int buscaCteBool(char *val){
 	while ((c != NULL) && (strcmp(val,c->val) != 0))
 		c = c->sig;
 	if (c == NULL)
-		return hc;
-	else
 		return -1;
+	else
+		return hc;
 }
 
 // Agrega constante
@@ -559,4 +558,85 @@ void agregaCte(char tipo, char *val, int auxN){
 			}
 			break;
 	}
+}
+
+// Imprime tablas de constantes
+void imprimeCteInt(FILE *listing) {
+	int i;
+	for (i=0;i<TAMANO_HASH;++i) {
+		if (hashInt[i] != NULL) {
+			cteInt c = hashInt[i];
+			while (c != NULL) {
+				fprintf(listing,"%i#",c->val);
+				fprintf(listing,"%d",c->dirvar);
+				fprintf(listing,"\n");
+				c = c->sig;
+			}
+		}
+	}
+	fprintf(listing,"$$\n");
+}
+
+void imprimeCteFloat(FILE *listing) {
+	int i;
+	for (i=0;i<TAMANO_HASH;++i) {
+		if (hashFloat[i] != NULL) {
+			cteFloat c = hashFloat[i];
+			while (c != NULL) {
+				fprintf(listing,"%f#",c->val);
+				fprintf(listing,"%d",c->dirvar);
+				fprintf(listing,"\n");
+				c = c->sig;
+			}
+		}
+	}
+	fprintf(listing,"$\n");
+}
+
+void imprimeCteChar(FILE *listing) {
+	int i;
+	for (i=0;i<TAMANO_HASH;++i) {
+		if (hashChar[i] != NULL) {
+			cteChar c = hashChar[i];
+			while (c != NULL) {
+				fprintf(listing,"%s#",c->val);
+				fprintf(listing,"%d",c->dirvar);
+				fprintf(listing,"\n");
+				c = c->sig;
+			}
+		}
+	}
+	fprintf(listing,"$$\n");
+}
+
+void imprimeCteStr(FILE *listing) {
+	int i;
+	for (i=0;i<TAMANO_HASH;++i) {
+		if (hashStr[i] != NULL) {
+			cteStr c = hashStr[i];
+			while (c != NULL) {
+				fprintf(listing,"%s#",c->val);
+				fprintf(listing,"%d",c->dirvar);
+				fprintf(listing,"\n");
+				c = c->sig;
+			}
+		}
+	}
+	fprintf(listing,"$\n");
+}
+
+void imprimeCteBool(FILE *listing) {
+	int i;
+	for (i=0;i<TAMANO_HASH;++i) {
+		if (hashBool[i] != NULL) {
+			cteBool c = hashBool[i];
+			while (c != NULL) {
+				fprintf(listing,"%s#",c->val);
+				fprintf(listing,"%d",c->dirvar);
+				fprintf(listing,"\n");
+				c = c->sig;
+			}
+		}
+	}
+	fprintf(listing,"$$\n");
 }

@@ -73,27 +73,11 @@ void generaRetorno(){
 	apunta_cuadruplo++;
 }
 
-void generaCuadruploReturn(int valor, int tipo){
+void generaCuadruploReturn(int valor){
 	cuad[apunta_cuadruplo].operador = 415;
 	cuad[apunta_cuadruplo].operando1 = valor;
 	cuad[apunta_cuadruplo].operando2 = -1;
-	switch(tipo) {
-		case 0:
-			cuad[apunta_cuadruplo].resultado = enteros_temporales+apunta_enteros_temporales-1;
-			break;
-		case 1:
-			cuad[apunta_cuadruplo].resultado = flotantes_temporales+apunta_flotantes_temporales-1;
-			break;
-		case 2:
-			cuad[apunta_cuadruplo].resultado = chars_temporales + apunta_chars_temporales-1;
-			break;
-		case 3:
-			cuad[apunta_cuadruplo].resultado = strings_temporales + apunta_strings_temporales-1;
-			break;
-		case 4:
-			cuad[apunta_cuadruplo].resultado = booleanos_temporales+ apunta_booleanos_temporales-1;
-			break;
-	}
+	cuad[apunta_cuadruplo].resultado = -1;
 	apunta_cuadruplo++;
 }
 
@@ -155,9 +139,16 @@ void imprimeCuadruplos(char *myfile){
 	int i;
 	FILE *obj;
 	obj = fopen(myfile,"w+");
+	imprimeProc(obj);
+	imprimeCteInt(obj);
+	imprimeCteFloat(obj);
+	imprimeCteChar(obj);
+	imprimeCteStr(obj);
+	imprimeCteBool(obj);
 	for(i=0;i<apunta_cuadruplo;i++){
 		printf("%d: [%d, %d, %d, %d]\n",i, cuad[i].operador,cuad[i].operando1,cuad[i].operando2,cuad[i].resultado);
 		fprintf(obj, "%d,%d,%d,%d\n", cuad[i].operador,cuad[i].operando1,cuad[i].operando2,cuad[i].resultado);
-	}
+	}	
+	fprintf(obj,"$\n");
 	fclose(obj);
 }

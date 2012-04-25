@@ -27,13 +27,14 @@ int numVarFloat = 0;
 int numVarChar = 0;
 int numVarStr = 0;
 int numVarBool = 0;
-int aux = 0;
+int aux = 1;
 int op; //operador
 int auxif;
 int k = 0;
 int numret = 0;
 int numCuadFunc;
 char tipoFunc;
+int valorReturn;
 
 void generacionDeCuadruplos(int oper);
 void asignaTipoAux(char tipo);
@@ -74,6 +75,7 @@ programa: NOMBRE { insertaProcIni('n', $1); scope = 'g'; generaGoTo(); pushPSalt
 
 programa2: /* empty */
 	| function programa2
+	;
 
 /*****ASIGNACION GLOBAL*****/
 
@@ -200,7 +202,7 @@ condicion3: { rellenaGoToF(popPSaltos(), apunta_cuadruplo); }
 	;
 
 ret: /* empty */
-	| RETURN PARA exp PARC PC { numret++; asignaTipoAux(tipoFunc); generaCuadruploReturn(popPilaO(), tipoAux);
+	| RETURN PARA exp PARC PC { numret++; asignaTipoAux(tipoFunc); valorReturn = cimaPilaO(); generaCuadruploReturn(popPilaO());
 					if(popPTipos() != tipoAux)
 						yyerror("Tipo de valor de salida incompatible con el del metodo\n"); }
 	;
@@ -356,7 +358,7 @@ function: tipo FUNCTION NOMBRE { scope = 'l'; tipoFunc = tipo; numCuadFunc = apu
 				if(buscaProc($3) != -1) {
 					yyerror("Procedimiento declarado existente.\n");
 				 }
-				} PARA function2 PARC BEGINF LLA asigna b2 { insertaProc(tipoFunc,$3,numVarInt,numVarFloat,numVarChar,numVarStr,numVarBool,cParam,numCuadFunc,paramAux); insertaVarGlobal(tipoFunc, $3); } bloque3 ret LLC ENDF {
+				} PARA function2 PARC BEGINF LLA asigna b2 { insertaProc(tipoFunc,$3,numVarInt,numVarFloat,numVarChar,numVarStr,numVarBool,cParam,numCuadFunc,paramAux, valorReturn); insertaVarGlobal(tipoFunc, $3); } bloque3 ret LLC ENDF {
 		reiniciaContTemp();
 		reiniciaContVars();
 		reiniciaTablaVar();

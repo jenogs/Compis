@@ -41,14 +41,14 @@ char x = 'x'; //error
 //cubo[Tipo1][Tipo2][Operador]
 
 char cubo[5][5][11] =   /* Enteros */
-		       {{{i,i,i,i,b,b,b,b,i,b,b},
-			{f,f,f,f,b,b,b,b,x,b,b},
+		       {{{i,i,i,i,x,x,b,b,i,b,b},
+			{f,f,f,f,x,x,b,b,x,b,b},
 			{x,x,x,x,x,x,x,x,x,x,x},
 			{x,x,x,x,x,x,x,x,x,x,x},
 			{x,x,x,x,x,x,x,x,x,x,x}},
 			/* Flotantes */
-		       {{f,f,f,f,b,b,b,b,f,b,b},
-			{f,f,f,f,b,b,b,b,f,b,b},
+		       {{f,f,f,f,x,x,b,b,f,b,b},
+			{f,f,f,f,x,x,b,b,f,b,b},
 			{x,x,x,x,x,x,x,x,x,x,x},
 			{x,x,x,x,x,x,x,x,x,x,x},
 			{x,x,x,x,x,x,x,x,x,x,x}},
@@ -56,7 +56,7 @@ char cubo[5][5][11] =   /* Enteros */
 		       {{x,x,x,x,x,x,x,x,x,x,x},
 			{x,x,x,x,x,x,x,x,x,x,x},
 			{x,x,x,x,x,x,x,x,c,b,b},
-			{x,x,x,x,x,x,x,x,x,b,b},
+			{x,x,x,x,x,x,x,x,s,b,b},
 			{x,x,x,x,x,x,x,x,x,x,x}},
 			/* String */
 		       {{x,x,x,x,x,x,x,x,x,x,x},
