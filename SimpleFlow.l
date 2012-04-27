@@ -32,7 +32,6 @@ using namespace std;
 "if"						{ return IF; }
 "else"						{ return ELSE; }
 "print"						{ return PRINT; }
-"read"						{ return READ; }
 "int"						{ return INT; }
 "float"						{ return FLOAT; }
 "string"					{ return STR; }
@@ -42,6 +41,7 @@ using namespace std;
 "end"						{ return ENDP; }
 "return"					{ return RETURN; }
 "repeat"					{ return REPEAT; }
+"until"						{ return UNTIL; }
 "function"					{ return FUNCTION; }
 "beginf"					{ return BEGINF; }
 "endf"						{ return ENDF; }

@@ -25,6 +25,7 @@ public class SFPrueba {
 	public static void main(String[] args) {
 		new SFPrueba().leeObj("obj");
 		mv = new MaquinaVirtual(listaProcs, listaCteInt, listaCteFloat, listaCteChar, listaCteStr, listaCteBool, listaCuadruplos);
+		mv.run();
 	}
 
 	public void leeObj(String file) {
@@ -38,7 +39,7 @@ public class SFPrueba {
 			
 			while(!line.equals("$")) {
 				aux = line.split("#");
-				proc = new Procs(aux[0],Integer.parseInt(aux[1]));
+				proc = new Procs(Integer.parseInt(aux[0]),Integer.parseInt(aux[1]));
 				listaProcs.add(proc);
 				line = bufferedReader.readLine();
 			}
@@ -62,7 +63,7 @@ public class SFPrueba {
 			
 			while(!line.equals("$$")) {
 				aux = line.split("#");
-				cteAux = new Constantes(aux[0],Integer.parseInt(aux[1]));
+				cteAux = new Constantes(aux[0].substring(1,aux[0].length()-1),Integer.parseInt(aux[1]));
 				listaCteChar.add(cteAux);
 				line = bufferedReader.readLine();
 			}
@@ -70,7 +71,7 @@ public class SFPrueba {
 
 			while(!line.equals("$")) {
 				aux = line.split("#");
-				cteAux = new Constantes(aux[0],Integer.parseInt(aux[1]));
+				cteAux = new Constantes(aux[0].substring(1,aux[0].length()-1),Integer.parseInt(aux[1]));
 				listaCteStr.add(cteAux);
 				line = bufferedReader.readLine();
 			}

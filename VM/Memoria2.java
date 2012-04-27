@@ -26,7 +26,7 @@ public class Memoria2 {
 		flotantes[dir] = val;
 	}
 
-	public int getFlotante(int dir){
+	public float getFlotante(int dir){
 		return flotantes[dir];
 	}
 	
@@ -34,16 +34,15 @@ public class Memoria2 {
 		chars[dir] = val;
 	}
 
-	public int getChar(int dir){
+	public char getChar(int dir){
 		return chars[dir];
 	}
-
 	
 	public void setStrings(int dir, String val){
 		strings[dir] = val;
 	}
 
-	public int getStrings(int dir){
+	public String getStrings(int dir){
 		return strings[dir];
 	}	
 	
@@ -51,7 +50,7 @@ public class Memoria2 {
 		booleanos[dir] = val;
 	}
 
-	public int getBooleanos(int dir){
+	public boolean getBooleanos(int dir){
 		return booleanos[dir];
 	}
 

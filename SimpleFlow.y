@@ -34,6 +34,7 @@ int k = 0;
 int numret = 0;
 int numCuadFunc;
 char tipoFunc;
+int idReturn;
 int valorReturn;
 
 void generacionDeCuadruplos(int oper);
@@ -52,7 +53,7 @@ int asignaTemp(char tipo);
 	char *string;
 };
 
-%token BEGINP ENDP FUNCTION BEGINF ENDF IGU GLOBAL RETURN
+%token BEGINP ENDP FUNCTION BEGINF ENDF IGU GLOBAL RETURN UNTIL
 %token MAY MEN DIF IF ELSE PRINT SUM RES MULT DIV STR INT FLOAT PROG VAR EQ BOOL AND OR REPEAT READ CHAR
 %token DP PC COMA LLA LLC PARA PARC
 
@@ -70,7 +71,7 @@ int asignaTemp(char tipo);
 
 %%
 
-programa: NOMBRE { insertaProcIni('n', $1); scope = 'g'; generaGoTo(); pushPSaltos(apunta_cuadruplo-1); } asignaglobal programa2 BEGINP { scope = 'l'; rellenaGoTo(popPSaltos(), apunta_cuadruplo); } bloque ENDP { generaEnd(); printf("Programa completo\n"); }
+programa: NOMBRE { insertaProcIni('n', $1); scope = 'g'; } asignaglobal { generaGoTo(); pushPSaltos(apunta_cuadruplo-1); }programa2 BEGINP { scope = 'l'; rellenaGoTo(popPSaltos(), apunta_cuadruplo); } bloque ENDP { generaEnd(); printf("Programa completo\n"); }
 	;
 
 programa2: /* empty */
@@ -132,7 +133,6 @@ bloque3: /* empty */
 estatuto: condicion
 	| escritura
 	| ciclo
-	| lectura
 	| funcion
 	| otraasignacion
 	;
@@ -202,7 +202,7 @@ condicion3: { rellenaGoToF(popPSaltos(), apunta_cuadruplo); }
 	;
 
 ret: /* empty */
-	| RETURN PARA exp PARC PC { numret++; asignaTipoAux(tipoFunc); valorReturn = cimaPilaO(); generaCuadruploReturn(popPilaO());
+	| RETURN PARA exp PARC PC { numret++; asignaTipoAux(tipoFunc); generaCuadruploReturn(popPilaO(), idReturn);
 					if(popPTipos() != tipoAux)
 						yyerror("Tipo de valor de salida incompatible con el del metodo\n"); }
 	;
@@ -255,19 +255,9 @@ escritura2: exp { generaCuadruploPrint(popPilaO()); } COMA escritura2
 	| exp { generaCuadruploPrint(popPilaO()); }
 	;
 
-/*****LECTURA*****/
-
-lectura: READ PARA ID PARC PC { generaCuadruploRead(popPilaO()); }
-	;
-
 /*****CICLO*****/
 
-ciclo: REPEAT varcte { if(popPTipos() == 0) {
-				pushPSaltos(apunta_cuadruplo);
-				generaGoToF(popPilaO());
-			} else {
-				yyerror("Tipo incompatible en el repeat.\n");
-			} } LLA bloque3 LLC { rellenaGoToF(popPSaltos(), apunta_cuadruplo); }
+ciclo: REPEAT { pushPSaltos(apunta_cuadruplo); } LLA bloque3 LLC UNTIL PARA expresion PARC PC { generaGoToF(popPilaO()); rellenaGoToF(apunta_cuadruplo-1, popPSaltos()); }
 	;
 
 /*****EXPRESION*****/
@@ -346,8 +336,8 @@ factor: PARA { pushPOper(350); } exp PARC { popPOper(); }
 varcte: ID { op = buscaVar($1, scope); asignaTipoAux(buscaVarTipo($1, scope)); pushPTipos(tipoAux); pushPilaO(op); }
 	| CTEE { agregaCte('i', $1, aux); op = buscaCteInt($1); pushPilaO(op); pushPTipos(0); }
 	| CTEF { agregaCte('f', $1, aux); op = buscaCteFloat($1); pushPilaO(op); pushPTipos(1); } 
-	| STRING { agregaCte('s', subString($1, 1, strlen($1)), 0); op = buscaCteChar($1); pushPilaO(op); pushPTipos(3); }
-	| CH { agregaCte('c', subString($1, 1, strlen($1)), 0); op = buscaCteStr($1); pushPilaO(op); pushPTipos(2); }
+	| STRING { agregaCte('s', subString($1, 0, strlen($1)), 0); op = buscaCteStr($1); pushPilaO(op); pushPTipos(3); }
+	| CH { agregaCte('c', subString($1, 0, strlen($1)), 0); op = buscaCteChar($1); pushPilaO(op); pushPTipos(2); }
 	| BOOLEAN { agregaCte('b', $1, 0); op = buscaCteBool($1); pushPilaO(op); pushPTipos(4); }
 	| funcionalt
 	;
@@ -358,7 +348,7 @@ function: tipo FUNCTION NOMBRE { scope = 'l'; tipoFunc = tipo; numCuadFunc = apu
 				if(buscaProc($3) != -1) {
 					yyerror("Procedimiento declarado existente.\n");
 				 }
-				} PARA function2 PARC BEGINF LLA asigna b2 { insertaProc(tipoFunc,$3,numVarInt,numVarFloat,numVarChar,numVarStr,numVarBool,cParam,numCuadFunc,paramAux, valorReturn); insertaVarGlobal(tipoFunc, $3); } bloque3 ret LLC ENDF {
+				} PARA function2 PARC BEGINF LLA asigna b2 { insertaProc(tipoFunc,$3,numVarInt,numVarFloat,numVarChar,numVarStr,numVarBool,cParam,numCuadFunc,paramAux); insertaVarGlobal(tipoFunc, $3); idReturn = buscaVar($3, 'g'); } bloque3 ret LLC ENDF {
 		reiniciaContTemp();
 		reiniciaContVars();
 		reiniciaTablaVar();
@@ -393,8 +383,8 @@ void generacionDeCuadruplos(int oper){
 	int temp;
 	int operando1, operando2;
 	type = cubo[popPTipos()][popPTipos()][oper];
-	operando1 = popPilaO();
 	operando2 = popPilaO();
+	operando1 = popPilaO();
 	switch(type) {
 		case 'i':
 			temp = enteros_temporales+apunta_enteros_temporales;
@@ -467,33 +457,6 @@ void generacionDeCuadruplos(int oper){
 	}
 }
 
-int asignaTemp(char tipo) {
-	int t;
-	switch(tipo) {
-		case 'i':
-			t = enteros_temporales + apunta_enteros_temporales;
-			apunta_enteros_temporales++;
-			break;
-		case 'f':
-			t = flotantes_temporales+apunta_flotantes_temporales;
-			apunta_flotantes_temporales++;
-			break;
-		case 'c':
-			t = chars_temporales + apunta_chars_temporales;
-			apunta_chars_temporales++;
-			break;
-		case 's':
-			t = strings_temporales + apunta_strings_temporales;
-			apunta_strings_temporales++;
-			break;
-		case 'b':
-			t = booleanos_temporales+ apunta_booleanos_temporales;
-			apunta_booleanos_temporales++;
-			break;
-	}
-	return t;
-}
-
 void asignaTipoAux(char tipo) {
 	if(tipo == 'i') {
 		tipoAux = 0;
@@ -520,6 +483,33 @@ void sumaVar(char tipo) {
 	} else if(tipo == 'b') {
 		numVarBool++;
 	}
+}
+
+int asignaTemp(char tipo) {
+	int t;
+	switch(tipo) {
+		case 'i':
+			t = enteros_temporales + apunta_enteros_temporales;
+			apunta_enteros_temporales++;
+			break;
+		case 'f':
+			t = flotantes_temporales+apunta_flotantes_temporales;
+			apunta_flotantes_temporales++;
+			break;
+		case 'c':
+			t = chars_temporales + apunta_chars_temporales;
+			apunta_chars_temporales++;
+			break;
+		case 's':
+			t = strings_temporales + apunta_strings_temporales;
+			apunta_strings_temporales++;
+			break;
+		case 'b':
+			t = booleanos_temporales+ apunta_booleanos_temporales;
+			apunta_booleanos_temporales++;
+			break;
+	}
+	return t;
 }
 
 void reiniciaContVars() {

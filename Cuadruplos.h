@@ -21,7 +21,7 @@ int apunta_cuadruplo = 0;
 400 = GoTo
 401 = GoToF
 405 = Print
-406 = Read
+406 = Repeat
 410 = RET
 415 = return
 450 = Parametro
@@ -57,14 +57,6 @@ void generaCuadruploPrint(int resultado) {
 	apunta_cuadruplo++;
 }
 
-void generaCuadruploRead(int resultado) {
-	cuad[apunta_cuadruplo].operador = 406;
-	cuad[apunta_cuadruplo].operando1 = -1;
-	cuad[apunta_cuadruplo].operando2 = -1;
-	cuad[apunta_cuadruplo].resultado = resultado;
-	apunta_cuadruplo++;
-}
-
 void generaRetorno(){
 	cuad[apunta_cuadruplo].operador = 410;
 	cuad[apunta_cuadruplo].operando1 = -1;
@@ -73,11 +65,11 @@ void generaRetorno(){
 	apunta_cuadruplo++;
 }
 
-void generaCuadruploReturn(int valor){
+void generaCuadruploReturn(int valor, int varGlobal){
 	cuad[apunta_cuadruplo].operador = 415;
 	cuad[apunta_cuadruplo].operando1 = valor;
 	cuad[apunta_cuadruplo].operando2 = -1;
-	cuad[apunta_cuadruplo].resultado = -1;
+	cuad[apunta_cuadruplo].resultado = varGlobal;
 	apunta_cuadruplo++;
 }
 

@@ -47,42 +47,43 @@
      IGU = 263,
      GLOBAL = 264,
      RETURN = 265,
-     MAY = 266,
-     MEN = 267,
-     DIF = 268,
-     IF = 269,
-     ELSE = 270,
-     PRINT = 271,
-     SUM = 272,
-     RES = 273,
-     MULT = 274,
-     DIV = 275,
-     STR = 276,
-     INT = 277,
-     FLOAT = 278,
-     PROG = 279,
-     VAR = 280,
-     EQ = 281,
-     BOOL = 282,
-     AND = 283,
-     OR = 284,
-     REPEAT = 285,
-     READ = 286,
-     CHAR = 287,
-     DP = 288,
-     PC = 289,
-     COMA = 290,
-     LLA = 291,
-     LLC = 292,
-     PARA = 293,
-     PARC = 294,
-     ID = 295,
-     NOMBRE = 296,
-     STRING = 297,
-     CTEE = 298,
-     CTEF = 299,
-     BOOLEAN = 300,
-     CH = 301
+     UNTIL = 266,
+     MAY = 267,
+     MEN = 268,
+     DIF = 269,
+     IF = 270,
+     ELSE = 271,
+     PRINT = 272,
+     SUM = 273,
+     RES = 274,
+     MULT = 275,
+     DIV = 276,
+     STR = 277,
+     INT = 278,
+     FLOAT = 279,
+     PROG = 280,
+     VAR = 281,
+     EQ = 282,
+     BOOL = 283,
+     AND = 284,
+     OR = 285,
+     REPEAT = 286,
+     READ = 287,
+     CHAR = 288,
+     DP = 289,
+     PC = 290,
+     COMA = 291,
+     LLA = 292,
+     LLC = 293,
+     PARA = 294,
+     PARC = 295,
+     ID = 296,
+     NOMBRE = 297,
+     STRING = 298,
+     CTEE = 299,
+     CTEF = 300,
+     BOOLEAN = 301,
+     CH = 302
    };
 #endif
 
@@ -93,7 +94,7 @@ typedef union YYSTYPE
 {
 
 /* Line 1676 of yacc.c  */
-#line 50 "SimpleFlow.y"
+#line 51 "SimpleFlow.y"
 
 	char ch;
 	char *string;
@@ -101,7 +102,7 @@ typedef union YYSTYPE
 
 
 /* Line 1676 of yacc.c  */
-#line 105 "SimpleFlow.tab.h"
+#line 106 "SimpleFlow.tab.h"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */

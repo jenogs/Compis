@@ -100,7 +100,6 @@ typedef struct tabProcs{
 	int numVarsBool;
 	int numCuadruplo;
 	char parametro[50];
-	int valorRetorno;
 } *procs;
 
 // Estructuras de Constantes
@@ -352,7 +351,7 @@ void insertaProcIni(char tipo, char *id) {
 }
 
 // Insertar Procedimiento
-void insertaProc(char tipo, char *id, int varInt, int varFloat, int varChar, int varStr, int varBool, int num, int apuntador, char parametros[], int valorRet){
+void insertaProc(char tipo, char *id, int varInt, int varFloat, int varChar, int varStr, int varBool, int num, int apuntador, char parametros[]){
 	int i;
 	hp = hash(id);
 	procs p =  hashProcs[hp];
@@ -367,8 +366,6 @@ void insertaProc(char tipo, char *id, int varInt, int varFloat, int varChar, int
 	for(i = 0; i < num; i++){
 		p->parametro[i] = parametros[i];
 	}
-	
-	p->valorRetorno = valorRet;
 
 	p->sig = hashProcs[hp];
 	hashProcs[hp] = p;
@@ -408,8 +405,8 @@ void imprimeProc(FILE *listing){
 		if (hashProcs[i] != NULL) {
 			procs p = hashProcs[i];
 			while (p != NULL) {
-				fprintf(listing,"%s#", p->id);
-				fprintf(listing,"%d", i);
+				fprintf(listing,"%d#", i);
+				fprintf(listing,"%d", p->numCuadruplo);
 				fprintf(listing,"\n");
 				p = p->sig;
 			}
@@ -443,7 +440,7 @@ int buscaCteInt(char *val){
 	if (c == NULL)
 		return -1;
 	else
-		return hc;
+		return c->dirvar;
 }
 
 // Busca constante flotante
@@ -455,7 +452,7 @@ int buscaCteFloat(char *val){
 	if (c == NULL)
 		return -1;
 	else
-		return hc;
+		return c->dirvar;
 }
 
 // Busca constante char
@@ -467,7 +464,7 @@ int buscaCteChar(char *val){
 	if (c == NULL)
 		return -1;
 	else
-		return hc;
+		return c->dirvar;
 }
 
 // Busca constante string
@@ -479,7 +476,7 @@ int buscaCteStr(char *val){
 	if (c == NULL)
 		return -1;
 	else
-		return hc;
+		return c->dirvar;
 }
 
 // Busca constante booleana
@@ -491,7 +488,7 @@ int buscaCteBool(char *val){
 	if (c == NULL)
 		return -1;
 	else
-		return hc;
+		return c->dirvar;
 }
 
 // Agrega constante

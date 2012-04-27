@@ -108,7 +108,7 @@ public class Memoria {
 		return -1;
    	}
 	
-	public int getVarFlotante(char scope, int dir){
+	public float getVarFlotante(char scope, int dir){
 		switch(scope){
 			case 'g':
 				return global.getFlotante(dir - 1000);
@@ -122,7 +122,7 @@ public class Memoria {
 		return -1;
    	}
 	
-	public int getVarChar(char scope, int dir){
+	public char getVarChar(char scope, int dir){
 		switch(scope){
 			case 'g':
 				return global.getChar(dir - 2000);
@@ -133,10 +133,10 @@ public class Memoria {
 			case 'c':
 				return constante.getChar(dir - 17000);
 		}
-		return -1;
+		return 'x';
    	}
 	
-	public int getVarStrings(char scope, int dir){
+	public String getVarStrings(char scope, int dir){
 		switch(scope){
 			case 'g':
 				return global.getStrings(dir - 3000);
@@ -147,10 +147,10 @@ public class Memoria {
 			case 'c':
 				return constante.getStrings(dir - 18000);
 		}
-		return -1;
+		return "x";
    	}
 	
-	public int getVarBooleanos(char scope, int dir){
+	public boolean getVarBooleanos(char scope, int dir){
 		switch(scope){
 			case 'g':
 				return global.getBooleanos(dir - 4000);
@@ -161,6 +161,6 @@ public class Memoria {
 			case 'c':
 				return constante.getBooleanos(dir - 19000);
 		}
-		return -1;
+		return false;
    	}
 }

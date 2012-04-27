@@ -1,27 +1,37 @@
-PROG
+PRUEBA
 
-global int i = 0;
-global int j = 0;
+int function FIBO(int n) beginf {
 
-int function UNO (int a) beginf {
-	i = a * 2;
-	if(i < a+4) {
-		UNO(a+1);
+	if((n < 1) || (n == 1)) {
+		return(n);
+	} else {
+		return(FIBO(n-1) + FIBO(n-2));
 	}
-	return(a);
+
 } endf
 
-int function DOS (int b) beginf {
-	b = b*i+j;
-	return(b*2);
+float function FACT(float b) beginf {
+	if((b < 2) || (b == 2)) {
+		return(b);
+	} else {
+		return(b * FACT(b-1));
+	}
 } endf
 
 begin {
-	i = 2;
-	j = i*2-1;
+	float num = 5.0;
+	int x = 6;
+	bool z = true;
+	char c = 'v';
 
-	UNO(j);
-
-	print(i + DOS(i+j));
+	repeat {
+		x = x-1;
+		print(x);
+	} until(x == 1);
+	
+	print("Fibonacci = ");
+	print(FIBO(7));
+	print("Factorial = ");
+	print(FACT(num));
 }
 end

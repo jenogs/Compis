@@ -7,43 +7,38 @@ public class MaquinaVirtual {
 	
 	Memoria memory;
 	Memoria2 memEra;
+	Memoria2 memEraTemp;
 	List<Cuadruplo> listaCuadruplos;
 	List<Procs> listaProcs;
+	Stack<StackLocal> stackEra;
+	Stack<StackLocal> stackEraTemp;
 	int apuntaCuadruplo;
+	int dirProc;
+	int contInt, contFloat, contChar, contStr, contBool;
 
 	MaquinaVirtual(List<Procs> listaProcs, List<Constantes> listaCteInt, List<Constantes> listaCteFloat, List<Constantes> listaCteChar, List<Constantes> listaCteStr, List<Constantes> listaCteBool, List<Cuadruplo> listaCuadruplos) {
 		apuntaCuadruplo = 0;
+		dirProc = 0;
+		contInt = 0;
+		contFloat = 0;
+		contChar = 0;
+		contStr = 0;
+		contBool = 0;
 		memory = new Memoria(1000);
 		this.listaProcs = listaProcs;
 		this.listaCuadruplos = listaCuadruplos;
+		stackEra = new Stack<StackLocal>();
+		stackEraTemp = new Stack<StackLocal>();
 		agregaConstantes(listaCteInt, listaCteFloat, listaCteChar, listaCteStr, listaCteBool);
 	}
 	
-	public void agregaConstantes(List<Constantes> listaCteInt, List<Constantes> listaCteFloat, List<Constantes> listaCteChar, List<Constantes> listaCteStr, List<Constantes> listaCteBool) {
-		int i;
-		/* Agrega Constantes Enteras */
-		for(i = 0; i < listaCteInt.size(); i++) {
-			memory.agregaVar('c', listaCteInt.get(i).getDir(), Integer.parseInt(listaCteInt.get(i).getValor()));
-		}
-		/* Agrega Constantes Flotantes */
-		for(i = 0; i < listaCteFloat.size(); i++) {
-			memory.agregaVar('c', listaCteFloat.get(i).getDir(), Float.parseFloat(listaCteFloat.get(i).getValor()));
-		}
-		/* Agrega Constantes Chars */
-		for(i = 0; i < listaCteChar.size(); i++) {
-			char charAux = listaCteChar.get(i).getValor().charAt(0);
-			memory.agregaVar('c', listaCteChar.get(i).getDir(), charAux);
-		}
-		/* Agrega Constantes Strings */
-		for(i = 0; i < listaCteStr.size(); i++) {
-			memory.agregaVar('c', listaCteStr.get(i).getDir(), listaCteStr.get(i).getValor());
-		}
-		/* Agrega Constantes Booleanas */
-		for(i = 0; i < listaCteBool.size(); i++) {
-			memory.agregaVar('c', listaCteBool.get(i).getDir(), Boolean.parseBoolean(listaCteBool.get(i).getValor()));
+	public void run(){
+		dirProc = listaProcs.size()-1;
+		for(apuntaCuadruplo = 0; apuntaCuadruplo < listaCuadruplos.size(); apuntaCuadruplo++){
+			leeCuadruplo(listaCuadruplos.get(apuntaCuadruplo));	
 		}
 	}
-
+	
 	public void leeCuadruplo(Cuadruplo cuadruplo) {
 		int op1 = cuadruplo.getOperando1();
 		int op2 = cuadruplo.getOperando2();
@@ -338,8 +333,8 @@ public class MaquinaVirtual {
 					memory.agregaVar(scopeRes, res, operando1);
 				}
 				else if(tipoOp1 =='c' && tipoRes == 's') { /*Char -> String*/
-					String operando1 = memory.getVarChar(scopeOp1, op1);
-					memory.agregaVar(scopeRes, res, operando1);
+					char operando1 = memory.getVarChar(scopeOp1, op1);
+					memory.agregaVar(scopeRes, res, ""+operando1);
 				}
 				else if(tipoOp1 =='s' && tipoRes == 's') { /*String -> String*/
 					String operando1 = memory.getVarStrings(scopeOp1, op1);
@@ -352,14 +347,14 @@ public class MaquinaVirtual {
 				break;
 			/* GoTo */
 			case 400:
-				apuntaCuadruplo = res;
+				apuntaCuadruplo = res-1;
 				break;
 			
 			/* GoToF */
 			case 401:
 				boolean operando1 = memory.getVarBooleanos(scopeOp1, op1);
 				if(!operando1){
-					apuntaCuadruplo = res;
+					apuntaCuadruplo = res-1;
 				}
 				break;
 			
@@ -387,34 +382,132 @@ public class MaquinaVirtual {
 				}
 				break;
 			
-			/* Read */
-		//	case 406:
-		//		break;
-			
 			/* RET */
 			case 410:
+				StackLocal ret = stackEra.pop();
+				dirProc = ret.getDirProc();
+				memory.local = ret.getMemLocal();
+				apuntaCuadruplo = ret.getDirRet();
+				
+				StackLocal retTemp = stackEraTemp.pop();
+				dirProc = retTemp.getDirProc();
+				memory.temporal = retTemp.getMemLocal();
+				apuntaCuadruplo = retTemp.getDirRet();
 				break;
 			
 			/* Return */
 			case 415:
+				if(tipoOp1 == 'i') {
+					int valRet = memory.getVarEntero(scopeOp1, op1);
+					memory.agregaVar('g', res, valRet);
+				} else if(tipoOp1 == 'f') {
+					float valRet = memory.getVarFlotante(scopeOp1, op1);
+					memory.agregaVar('g', res, valRet);
+				} else if(tipoOp1 == 'c') {
+					char valRet = memory.getVarChar(scopeOp1, op1);
+					memory.agregaVar('g', res, valRet);
+				} else if(tipoOp1 == 's') {
+					String valRet = memory.getVarStrings(scopeOp1, op1);
+					memory.agregaVar('g', res, valRet);
+				} else if(tipoOp1 == 'b') {
+					boolean valRet = memory.getVarBooleanos(scopeOp1, op1);
+					memory.agregaVar('g', res, valRet);
+				}
+				break;
+
+			/* Parametro */
+			case 450:
+				if(tipoOp1 == 'i') {
+					int valParam = memory.getVarEntero(scopeOp1, op1);
+					memEra.setEntero(contInt, valParam);
+					contInt++;
+				} else if(tipoOp1 == 'f') {
+					float valParam = memory.getVarFlotante(scopeOp1, op1);
+					memEra.setFlotante(contFloat, valParam);
+					contFloat++;
+				} else if(tipoOp1 == 'c') {
+					char valParam = memory.getVarChar(scopeOp1, op1);
+					memEra.setChar(contChar, valParam);
+					contChar++;
+				} else if(tipoOp1 == 's') {
+					String valParam = memory.getVarStrings(scopeOp1, op1);
+					memEra.setStrings(contStr, valParam);
+					contStr++;
+				} else if(tipoOp1 == 'b') {
+					boolean valParam = memory.getVarBooleanos(scopeOp1, op1);
+					memEra.setBooleanos(contBool, valParam);
+					contBool++;
+				}
 				break;
 			
 			/* ERA */
 			case 500:
-				if (tipoOp1 == enum(functionX)){ // PENDIENTE
-					temporalSub = apuntaFuncion; // PENDIENTE
+				StackLocal era = new StackLocal(dirProc, memory.local, apuntaCuadruplo);
+				stackEra.push(era);
+				StackLocal eraTemp = new StackLocal(dirProc, memory.temporal, apuntaCuadruplo);
+				stackEraTemp.push(eraTemp);
+				memEra = new Memoria2(1000,1000,1000,1000,1000);
+				memEraTemp = new Memoria2(1000,1000,1000,1000,1000);
+				for(int i = 0; i < listaProcs.size(); i++){
+					if(listaProcs.get(i).getDir() == op1){
+						dirProc = i;
+						i = listaProcs.size();
+					}
 				}
 				break;
 					
 			/* GoSub */
 			case 550:
-				apuntaCuadruplo = temporalSub; // PENDIENTE
+				contInt = 0;
+				contFloat = 0;
+				contChar = 0;
+				contStr = 0;
+				contBool = 0;
+				if(!stackEra.empty()){
+					stackEra.peek().setDirRet(apuntaCuadruplo);
+				}
+				if(!stackEraTemp.empty()){
+					stackEraTemp.peek().setDirRet(apuntaCuadruplo);
+				}
+				for(int i = 0; i < listaProcs.size(); i++){
+					if(listaProcs.get(i).getDir() == op1){
+						apuntaCuadruplo = listaProcs.get(i).getCuadruplo()-1;
+						i = listaProcs.size();
+					}
+				}
+				memory.local =  memEra;
+				memory.temporal =  memEraTemp;
 				break;
 			
 			/* END */
 			case 777:
 				System.out.println("Fin del programa");
 				break;
+		}
+	}
+	
+	public void agregaConstantes(List<Constantes> listaCteInt, List<Constantes> listaCteFloat, List<Constantes> listaCteChar, List<Constantes> listaCteStr, List<Constantes> listaCteBool) {
+		int i;
+		/* Agrega Constantes Enteras */
+		for(i = 0; i < listaCteInt.size(); i++) {
+			memory.agregaVar('c', listaCteInt.get(i).getDir(), Integer.parseInt(listaCteInt.get(i).getValor()));
+		}
+		/* Agrega Constantes Flotantes */
+		for(i = 0; i < listaCteFloat.size(); i++) {
+			memory.agregaVar('c', listaCteFloat.get(i).getDir(), Float.parseFloat(listaCteFloat.get(i).getValor()));
+		}
+		/* Agrega Constantes Chars */
+		for(i = 0; i < listaCteChar.size(); i++) {
+			char charAux = listaCteChar.get(i).getValor().charAt(0);
+			memory.agregaVar('c', listaCteChar.get(i).getDir(), charAux);
+		}
+		/* Agrega Constantes Strings */
+		for(i = 0; i < listaCteStr.size(); i++) {
+			memory.agregaVar('c', listaCteStr.get(i).getDir(), listaCteStr.get(i).getValor());
+		}
+		/* Agrega Constantes Booleanas */
+		for(i = 0; i < listaCteBool.size(); i++) {
+			memory.agregaVar('c', listaCteBool.get(i).getDir(), Boolean.parseBoolean(listaCteBool.get(i).getValor()));
 		}
 	}
 	
@@ -430,6 +523,7 @@ public class MaquinaVirtual {
 		}else if((dir >= 4000 && dir < 5000) || (dir >= 9000 && dir < 10000) || (dir >= 14000 && dir < 15000) || (dir >= 19000 && dir < 20000)) {
 			return 'b';
 		}
+		return 'x';
 	}
 
 	public char getScope(int dir){
@@ -442,6 +536,7 @@ public class MaquinaVirtual {
 		}else if(dir >= 15000 && dir < 20000) {
 			return 'c';
 		}
+		return'x';
 	}
 
 }
