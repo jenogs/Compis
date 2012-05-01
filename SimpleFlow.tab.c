@@ -108,6 +108,8 @@ char tipoFunc;
 int idReturn;
 int valorReturn;
 
+char nombreArchivo[100];
+
 void generacionDeCuadruplos(int oper);
 void asignaTipoAux(char tipo);
 void sumaVar(char tipo);
@@ -120,7 +122,7 @@ int asignaTemp(char tipo);
 
 
 /* Line 189 of yacc.c  */
-#line 124 "SimpleFlow.tab.c"
+#line 126 "SimpleFlow.tab.c"
 
 /* Enabling traces.  */
 #ifndef YYDEBUG
@@ -202,7 +204,7 @@ typedef union YYSTYPE
 {
 
 /* Line 214 of yacc.c  */
-#line 51 "SimpleFlow.y"
+#line 53 "SimpleFlow.y"
 
 	char ch;
 	char *string;
@@ -210,7 +212,7 @@ typedef union YYSTYPE
 
 
 /* Line 214 of yacc.c  */
-#line 214 "SimpleFlow.tab.c"
+#line 216 "SimpleFlow.tab.c"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
@@ -222,7 +224,7 @@ typedef union YYSTYPE
 
 
 /* Line 264 of yacc.c  */
-#line 226 "SimpleFlow.tab.c"
+#line 228 "SimpleFlow.tab.c"
 
 #ifdef short
 # undef short
@@ -550,18 +552,18 @@ static const yytype_int8 yyrhs[] =
 /* YYRLINE[YYN] -- source line where rule number YYN was defined.  */
 static const yytype_uint16 yyrline[] =
 {
-       0,    74,    74,    74,    74,    74,    77,    78,    83,    84,
-      85,    88,    89,    92,   107,   119,   122,   123,   124,   127,
-     128,   133,   134,   135,   136,   137,   142,   142,   157,   158,
-     158,   165,   166,   166,   170,   170,   187,   187,   197,   197,
-     198,   201,   204,   205,   212,   227,   230,   242,   243,   244,
-     245,   246,   251,   254,   254,   255,   260,   260,   265,   268,
-     268,   271,   271,   274,   274,   277,   277,   280,   280,   283,
-     284,   284,   287,   287,   294,   297,   304,   305,   305,   306,
-     306,   311,   314,   321,   322,   322,   323,   323,   328,   328,
-     329,   329,   330,   330,   331,   336,   337,   338,   339,   340,
-     341,   342,   347,   351,   347,   362,   363,   363,   366,   367,
-     370,   371,   374,   375
+       0,    76,    76,    76,    76,    76,    79,    80,    85,    86,
+      87,    90,    91,    94,   109,   121,   124,   125,   126,   129,
+     130,   135,   136,   137,   138,   139,   144,   144,   159,   160,
+     160,   167,   168,   168,   172,   172,   189,   189,   199,   199,
+     200,   203,   206,   207,   214,   229,   232,   244,   245,   246,
+     247,   248,   253,   256,   256,   257,   262,   262,   267,   270,
+     270,   273,   273,   276,   276,   279,   279,   282,   282,   285,
+     286,   286,   289,   289,   296,   299,   306,   307,   307,   308,
+     308,   313,   316,   323,   324,   324,   325,   325,   330,   330,
+     331,   331,   332,   332,   333,   338,   339,   340,   341,   342,
+     343,   344,   349,   353,   349,   364,   365,   365,   368,   369,
+     372,   373,   376,   377
 };
 #endif
 
@@ -1598,35 +1600,35 @@ yyreduce:
         case 2:
 
 /* Line 1455 of yacc.c  */
-#line 74 "SimpleFlow.y"
+#line 76 "SimpleFlow.y"
     { insertaProcIni('n', (yyvsp[(1) - (1)].string)); scope = 'g'; ;}
     break;
 
   case 3:
 
 /* Line 1455 of yacc.c  */
-#line 74 "SimpleFlow.y"
+#line 76 "SimpleFlow.y"
     { generaGoTo(); pushPSaltos(apunta_cuadruplo-1); ;}
     break;
 
   case 4:
 
 /* Line 1455 of yacc.c  */
-#line 74 "SimpleFlow.y"
+#line 76 "SimpleFlow.y"
     { scope = 'l'; rellenaGoTo(popPSaltos(), apunta_cuadruplo); ;}
     break;
 
   case 5:
 
 /* Line 1455 of yacc.c  */
-#line 74 "SimpleFlow.y"
+#line 76 "SimpleFlow.y"
     { generaEnd(); printf("Programa completo\n"); ;}
     break;
 
   case 13:
 
 /* Line 1455 of yacc.c  */
-#line 92 "SimpleFlow.y"
+#line 94 "SimpleFlow.y"
     { pushPOper(300); asignaTipoAux(tipo);
 				    if(buscaVar((yyvsp[(2) - (5)].string), 'g') != -1){
 						yyerror("Variable global existente.\n");
@@ -1645,7 +1647,7 @@ yyreduce:
   case 14:
 
 /* Line 1455 of yacc.c  */
-#line 107 "SimpleFlow.y"
+#line 109 "SimpleFlow.y"
     { pushPOper(300); asignaTipoAux(buscaVarTipo((yyvsp[(1) - (4)].string), 'g'));
 				    if(buscaVar((yyvsp[(1) - (4)].string), 'g') != -1){
 					if(cubo[cimaPTipos()][tipoAux][8] != 'x') {
@@ -1659,7 +1661,7 @@ yyreduce:
   case 26:
 
 /* Line 1455 of yacc.c  */
-#line 142 "SimpleFlow.y"
+#line 144 "SimpleFlow.y"
     { if(buscaProc((yyvsp[(1) - (2)].string)) == -1) {
 			yyerror("Procedimiento llamado no existente.\n");
 		 } else {
@@ -1671,7 +1673,7 @@ yyreduce:
   case 27:
 
 /* Line 1455 of yacc.c  */
-#line 147 "SimpleFlow.y"
+#line 149 "SimpleFlow.y"
     {
 			if((tipoParametro(k-1) != 0) || (tipoParametro(k-1) != 1) || (tipoParametro(k-1) != 2) || (tipoParametro(k-1) != 3) || (tipoParametro(k-1) != 4)) {
 				generaGoSub(buscaProc((yyvsp[(1) - (6)].string)));
@@ -1685,7 +1687,7 @@ yyreduce:
   case 29:
 
 /* Line 1455 of yacc.c  */
-#line 158 "SimpleFlow.y"
+#line 160 "SimpleFlow.y"
     { if(popPTipos() == tipoParametro(k-1)) {
 			generaCuadruploParametro(popPilaO(), k);
 		} else {
@@ -1696,14 +1698,14 @@ yyreduce:
   case 32:
 
 /* Line 1455 of yacc.c  */
-#line 166 "SimpleFlow.y"
+#line 168 "SimpleFlow.y"
     { k++; ;}
     break;
 
   case 34:
 
 /* Line 1455 of yacc.c  */
-#line 170 "SimpleFlow.y"
+#line 172 "SimpleFlow.y"
     { pushPOper(350); if(buscaProc((yyvsp[(1) - (2)].string)) == -1) {
 			yyerror("Procedimiento llamado no existente.\n");
 		 } else {
@@ -1715,7 +1717,7 @@ yyreduce:
   case 35:
 
 /* Line 1455 of yacc.c  */
-#line 175 "SimpleFlow.y"
+#line 177 "SimpleFlow.y"
     { popPOper();
 			if((tipoParametro(k-1) != 0) || (tipoParametro(k-1) != 1) || (tipoParametro(k-1) != 2) || (tipoParametro(k-1) != 3) || (tipoParametro(k-1) != 4)) {
 				generaGoSub(buscaProc((yyvsp[(1) - (5)].string)));
@@ -1730,7 +1732,7 @@ yyreduce:
   case 36:
 
 /* Line 1455 of yacc.c  */
-#line 187 "SimpleFlow.y"
+#line 189 "SimpleFlow.y"
     { auxif = popPTipos();
 				if(auxif != 4) {
 					yyerror("Tipos no compatibles en la condicion\n");
@@ -1743,28 +1745,28 @@ yyreduce:
   case 38:
 
 /* Line 1455 of yacc.c  */
-#line 197 "SimpleFlow.y"
+#line 199 "SimpleFlow.y"
     { generaGoTo(); rellenaGoToF(popPSaltos(), apunta_cuadruplo); pushPSaltos(apunta_cuadruplo-1); ;}
     break;
 
   case 39:
 
 /* Line 1455 of yacc.c  */
-#line 197 "SimpleFlow.y"
+#line 199 "SimpleFlow.y"
     { rellenaGoTo(popPSaltos(), apunta_cuadruplo); ;}
     break;
 
   case 41:
 
 /* Line 1455 of yacc.c  */
-#line 201 "SimpleFlow.y"
+#line 203 "SimpleFlow.y"
     { rellenaGoToF(popPSaltos(), apunta_cuadruplo); ;}
     break;
 
   case 43:
 
 /* Line 1455 of yacc.c  */
-#line 205 "SimpleFlow.y"
+#line 207 "SimpleFlow.y"
     { numret++; asignaTipoAux(tipoFunc); generaCuadruploReturn(popPilaO(), idReturn);
 					if(popPTipos() != tipoAux)
 						yyerror("Tipo de valor de salida incompatible con el del metodo\n"); ;}
@@ -1773,7 +1775,7 @@ yyreduce:
   case 44:
 
 /* Line 1455 of yacc.c  */
-#line 212 "SimpleFlow.y"
+#line 214 "SimpleFlow.y"
     { pushPOper(300); asignaTipoAux(tipo);
 				    if(buscaVar((yyvsp[(2) - (4)].string), 'l') != -1){
 					yyerror("Variable local existente.\n");
@@ -1792,7 +1794,7 @@ yyreduce:
   case 46:
 
 /* Line 1455 of yacc.c  */
-#line 230 "SimpleFlow.y"
+#line 232 "SimpleFlow.y"
     { pushPOper(300); asignaTipoAux(buscaVarTipo((yyvsp[(1) - (3)].string), 'l'));
 				    if(buscaVar((yyvsp[(1) - (3)].string), 'l') != -1){
 					if(cubo[cimaPTipos()][tipoAux][8] != 'x') {
@@ -1806,77 +1808,77 @@ yyreduce:
   case 47:
 
 /* Line 1455 of yacc.c  */
-#line 242 "SimpleFlow.y"
+#line 244 "SimpleFlow.y"
     { tipo = 'i'; ;}
     break;
 
   case 48:
 
 /* Line 1455 of yacc.c  */
-#line 243 "SimpleFlow.y"
+#line 245 "SimpleFlow.y"
     { tipo = 'f'; ;}
     break;
 
   case 49:
 
 /* Line 1455 of yacc.c  */
-#line 244 "SimpleFlow.y"
+#line 246 "SimpleFlow.y"
     { tipo = 'b'; ;}
     break;
 
   case 50:
 
 /* Line 1455 of yacc.c  */
-#line 245 "SimpleFlow.y"
+#line 247 "SimpleFlow.y"
     { tipo = 'c'; ;}
     break;
 
   case 51:
 
 /* Line 1455 of yacc.c  */
-#line 246 "SimpleFlow.y"
+#line 248 "SimpleFlow.y"
     { tipo = 's'; ;}
     break;
 
   case 53:
 
 /* Line 1455 of yacc.c  */
-#line 254 "SimpleFlow.y"
+#line 256 "SimpleFlow.y"
     { generaCuadruploPrint(popPilaO()); ;}
     break;
 
   case 55:
 
 /* Line 1455 of yacc.c  */
-#line 255 "SimpleFlow.y"
+#line 257 "SimpleFlow.y"
     { generaCuadruploPrint(popPilaO()); ;}
     break;
 
   case 56:
 
 /* Line 1455 of yacc.c  */
-#line 260 "SimpleFlow.y"
+#line 262 "SimpleFlow.y"
     { pushPSaltos(apunta_cuadruplo); ;}
     break;
 
   case 57:
 
 /* Line 1455 of yacc.c  */
-#line 260 "SimpleFlow.y"
+#line 262 "SimpleFlow.y"
     { generaGoToF(popPilaO()); rellenaGoToF(apunta_cuadruplo-1, popPSaltos()); ;}
     break;
 
   case 59:
 
 /* Line 1455 of yacc.c  */
-#line 268 "SimpleFlow.y"
+#line 270 "SimpleFlow.y"
     { pushPOper(202); ;}
     break;
 
   case 60:
 
 /* Line 1455 of yacc.c  */
-#line 268 "SimpleFlow.y"
+#line 270 "SimpleFlow.y"
     { if(cimaPOper() == 202) {
 		  				generacionDeCuadruplos(6);
 					      } pushPTipos(4); ;}
@@ -1885,14 +1887,14 @@ yyreduce:
   case 61:
 
 /* Line 1455 of yacc.c  */
-#line 271 "SimpleFlow.y"
+#line 273 "SimpleFlow.y"
     { pushPOper(203); ;}
     break;
 
   case 62:
 
 /* Line 1455 of yacc.c  */
-#line 271 "SimpleFlow.y"
+#line 273 "SimpleFlow.y"
     { if(cimaPOper() == 203) {
 		  				generacionDeCuadruplos(7);
 					      } pushPTipos(4); ;}
@@ -1901,14 +1903,14 @@ yyreduce:
   case 63:
 
 /* Line 1455 of yacc.c  */
-#line 274 "SimpleFlow.y"
+#line 276 "SimpleFlow.y"
     { pushPOper(204); ;}
     break;
 
   case 64:
 
 /* Line 1455 of yacc.c  */
-#line 274 "SimpleFlow.y"
+#line 276 "SimpleFlow.y"
     { if(cimaPOper() == 204) {
 		  				generacionDeCuadruplos(10);
 					      } pushPTipos(4); ;}
@@ -1917,14 +1919,14 @@ yyreduce:
   case 65:
 
 /* Line 1455 of yacc.c  */
-#line 277 "SimpleFlow.y"
+#line 279 "SimpleFlow.y"
     { pushPOper(205); ;}
     break;
 
   case 66:
 
 /* Line 1455 of yacc.c  */
-#line 277 "SimpleFlow.y"
+#line 279 "SimpleFlow.y"
     { if(cimaPOper() == 205) {
 		  				generacionDeCuadruplos(9);
 					      } pushPTipos(4); ;}
@@ -1933,28 +1935,28 @@ yyreduce:
   case 67:
 
 /* Line 1455 of yacc.c  */
-#line 280 "SimpleFlow.y"
+#line 282 "SimpleFlow.y"
     { pushPOper(350); ;}
     break;
 
   case 68:
 
 /* Line 1455 of yacc.c  */
-#line 280 "SimpleFlow.y"
+#line 282 "SimpleFlow.y"
     { popPOper(); ;}
     break;
 
   case 70:
 
 /* Line 1455 of yacc.c  */
-#line 284 "SimpleFlow.y"
+#line 286 "SimpleFlow.y"
     { pushPOper(200); ;}
     break;
 
   case 71:
 
 /* Line 1455 of yacc.c  */
-#line 284 "SimpleFlow.y"
+#line 286 "SimpleFlow.y"
     { if(cimaPOper() == 200) {
 		  				generacionDeCuadruplos(4);
 					      };}
@@ -1963,14 +1965,14 @@ yyreduce:
   case 72:
 
 /* Line 1455 of yacc.c  */
-#line 287 "SimpleFlow.y"
+#line 289 "SimpleFlow.y"
     { pushPOper(201); ;}
     break;
 
   case 73:
 
 /* Line 1455 of yacc.c  */
-#line 287 "SimpleFlow.y"
+#line 289 "SimpleFlow.y"
     { if(cimaPOper() == 201) {
 		  				generacionDeCuadruplos(5);
 					      };}
@@ -1979,7 +1981,7 @@ yyreduce:
   case 75:
 
 /* Line 1455 of yacc.c  */
-#line 297 "SimpleFlow.y"
+#line 299 "SimpleFlow.y"
     { if(cimaPOper() == 100) {
 		  	generacionDeCuadruplos(0);
 	} else if(cimaPOper() == 101) {
@@ -1990,21 +1992,21 @@ yyreduce:
   case 77:
 
 /* Line 1455 of yacc.c  */
-#line 305 "SimpleFlow.y"
+#line 307 "SimpleFlow.y"
     { pushPOper(100); ;}
     break;
 
   case 79:
 
 /* Line 1455 of yacc.c  */
-#line 306 "SimpleFlow.y"
+#line 308 "SimpleFlow.y"
     { pushPOper(101); ;}
     break;
 
   case 82:
 
 /* Line 1455 of yacc.c  */
-#line 314 "SimpleFlow.y"
+#line 316 "SimpleFlow.y"
     { if(cimaPOper() == 102) {
 		  	generacionDeCuadruplos(2);
 	} else if(cimaPOper() == 103) {
@@ -2015,91 +2017,91 @@ yyreduce:
   case 84:
 
 /* Line 1455 of yacc.c  */
-#line 322 "SimpleFlow.y"
+#line 324 "SimpleFlow.y"
     { pushPOper(102); ;}
     break;
 
   case 86:
 
 /* Line 1455 of yacc.c  */
-#line 323 "SimpleFlow.y"
+#line 325 "SimpleFlow.y"
     { pushPOper(103); ;}
     break;
 
   case 88:
 
 /* Line 1455 of yacc.c  */
-#line 328 "SimpleFlow.y"
+#line 330 "SimpleFlow.y"
     { pushPOper(350); ;}
     break;
 
   case 89:
 
 /* Line 1455 of yacc.c  */
-#line 328 "SimpleFlow.y"
+#line 330 "SimpleFlow.y"
     { popPOper(); ;}
     break;
 
   case 90:
 
 /* Line 1455 of yacc.c  */
-#line 329 "SimpleFlow.y"
+#line 331 "SimpleFlow.y"
     { aux = 1; ;}
     break;
 
   case 92:
 
 /* Line 1455 of yacc.c  */
-#line 330 "SimpleFlow.y"
+#line 332 "SimpleFlow.y"
     { aux = -1; ;}
     break;
 
   case 95:
 
 /* Line 1455 of yacc.c  */
-#line 336 "SimpleFlow.y"
+#line 338 "SimpleFlow.y"
     { op = buscaVar((yyvsp[(1) - (1)].string), scope); asignaTipoAux(buscaVarTipo((yyvsp[(1) - (1)].string), scope)); pushPTipos(tipoAux); pushPilaO(op); ;}
     break;
 
   case 96:
 
 /* Line 1455 of yacc.c  */
-#line 337 "SimpleFlow.y"
+#line 339 "SimpleFlow.y"
     { agregaCte('i', (yyvsp[(1) - (1)].string), aux); op = buscaCteInt((yyvsp[(1) - (1)].string)); pushPilaO(op); pushPTipos(0); ;}
     break;
 
   case 97:
 
 /* Line 1455 of yacc.c  */
-#line 338 "SimpleFlow.y"
+#line 340 "SimpleFlow.y"
     { agregaCte('f', (yyvsp[(1) - (1)].string), aux); op = buscaCteFloat((yyvsp[(1) - (1)].string)); pushPilaO(op); pushPTipos(1); ;}
     break;
 
   case 98:
 
 /* Line 1455 of yacc.c  */
-#line 339 "SimpleFlow.y"
+#line 341 "SimpleFlow.y"
     { agregaCte('s', subString((yyvsp[(1) - (1)].string), 0, strlen((yyvsp[(1) - (1)].string))), 0); op = buscaCteStr((yyvsp[(1) - (1)].string)); pushPilaO(op); pushPTipos(3); ;}
     break;
 
   case 99:
 
 /* Line 1455 of yacc.c  */
-#line 340 "SimpleFlow.y"
+#line 342 "SimpleFlow.y"
     { agregaCte('c', subString((yyvsp[(1) - (1)].string), 0, strlen((yyvsp[(1) - (1)].string))), 0); op = buscaCteChar((yyvsp[(1) - (1)].string)); pushPilaO(op); pushPTipos(2); ;}
     break;
 
   case 100:
 
 /* Line 1455 of yacc.c  */
-#line 341 "SimpleFlow.y"
+#line 343 "SimpleFlow.y"
     { agregaCte('b', (yyvsp[(1) - (1)].string), 0); op = buscaCteBool((yyvsp[(1) - (1)].string)); pushPilaO(op); pushPTipos(4); ;}
     break;
 
   case 102:
 
 /* Line 1455 of yacc.c  */
-#line 347 "SimpleFlow.y"
+#line 349 "SimpleFlow.y"
     { scope = 'l'; tipoFunc = tipo; numCuadFunc = apunta_cuadruplo; reiniciaContTemp(); numret = 0;
 				if(buscaProc((yyvsp[(3) - (3)].string)) != -1) {
 					yyerror("Procedimiento declarado existente.\n");
@@ -2110,14 +2112,14 @@ yyreduce:
   case 103:
 
 /* Line 1455 of yacc.c  */
-#line 351 "SimpleFlow.y"
+#line 353 "SimpleFlow.y"
     { insertaProc(tipoFunc,(yyvsp[(3) - (11)].string),numVarInt,numVarFloat,numVarChar,numVarStr,numVarBool,cParam,numCuadFunc,paramAux); insertaVarGlobal(tipoFunc, (yyvsp[(3) - (11)].string)); idReturn = buscaVar((yyvsp[(3) - (11)].string), 'g'); ;}
     break;
 
   case 104:
 
 /* Line 1455 of yacc.c  */
-#line 351 "SimpleFlow.y"
+#line 353 "SimpleFlow.y"
     {
 		reiniciaContTemp();
 		reiniciaContVars();
@@ -2132,14 +2134,14 @@ yyreduce:
   case 106:
 
 /* Line 1455 of yacc.c  */
-#line 363 "SimpleFlow.y"
+#line 365 "SimpleFlow.y"
     { insertaParam(tipo, cParam); cParam++; insertaVar(tipo, (yyvsp[(2) - (2)].string)); ;}
     break;
 
 
 
 /* Line 1455 of yacc.c  */
-#line 2143 "SimpleFlow.tab.c"
+#line 2145 "SimpleFlow.tab.c"
       default: break;
     }
   YY_SYMBOL_PRINT ("-> $$ =", yyr1[yyn], &yyval, &yyloc);
@@ -2351,7 +2353,7 @@ yyreturn:
 
 
 /* Line 1675 of yacc.c  */
-#line 378 "SimpleFlow.y"
+#line 380 "SimpleFlow.y"
 
 
 /* Generación de Cuadruplos */
@@ -2520,8 +2522,10 @@ void insertaParam(char tipo, int cParam) {
 }
 
 /* Funcion Main */
-main() {
-	FILE *myfile = fopen("prueba", "r");
+int main(int argc, char *argv[]) {
+	FILE *myfile = fopen(argv[1], "r");
+	strcpy(nombreArchivo,argv[1]);
+	strcat(nombreArchivo,"obj");
 	if (!myfile) {
 		printf("No se puede abrir el archivo!");
 		return -1;
@@ -2532,7 +2536,8 @@ main() {
 		yyparse();
 	} while (!feof(yyin));
 
-	imprimeCuadruplos("obj");
+	imprimeCuadruplos(nombreArchivo);
+	exit(0);
 }
 
 void yyerror(const char *s) {

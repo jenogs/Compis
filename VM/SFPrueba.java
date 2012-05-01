@@ -23,7 +23,8 @@ public class SFPrueba {
 	static MaquinaVirtual mv;
 
 	public static void main(String[] args) {
-		new SFPrueba().leeObj("obj");
+		String obj = (args[0]+".sflwobj");
+		new SFPrueba().leeObj(obj);
 		mv = new MaquinaVirtual(listaProcs, listaCteInt, listaCteFloat, listaCteChar, listaCteStr, listaCteBool, listaCuadruplos);
 		mv.run();
 	}

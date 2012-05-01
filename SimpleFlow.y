@@ -37,6 +37,8 @@ char tipoFunc;
 int idReturn;
 int valorReturn;
 
+char nombreArchivo[100];
+
 void generacionDeCuadruplos(int oper);
 void asignaTipoAux(char tipo);
 void sumaVar(char tipo);
@@ -543,8 +545,10 @@ void insertaParam(char tipo, int cParam) {
 }
 
 /* Funcion Main */
-main() {
-	FILE *myfile = fopen("prueba", "r");
+int main(int argc, char *argv[]) {
+	FILE *myfile = fopen(argv[1], "r");
+	strcpy(nombreArchivo,argv[1]);
+	strcat(nombreArchivo,"obj");
 	if (!myfile) {
 		printf("No se puede abrir el archivo!");
 		return -1;
@@ -555,7 +559,8 @@ main() {
 		yyparse();
 	} while (!feof(yyin));
 
-	imprimeCuadruplos("obj");
+	imprimeCuadruplos(nombreArchivo);
+	exit(0);
 }
 
 void yyerror(const char *s) {

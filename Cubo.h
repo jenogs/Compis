@@ -56,7 +56,7 @@ char cubo[5][5][11] =   /* Enteros */
 		       {{x,x,x,x,x,x,x,x,x,x,x},
 			{x,x,x,x,x,x,x,x,x,x,x},
 			{x,x,x,x,x,x,x,x,c,b,b},
-			{x,x,x,x,x,x,x,x,s,b,b},
+			{x,x,x,x,x,x,x,x,x,b,b},
 			{x,x,x,x,x,x,x,x,x,x,x}},
 			/* String */
 		       {{x,x,x,x,x,x,x,x,x,x,x},
